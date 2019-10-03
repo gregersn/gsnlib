@@ -1,4 +1,4 @@
-name: gsnlib Python Package
+name: Tests
 
 on: [push]
 
