@@ -55,27 +55,19 @@ class TestTranslation(unittest.TestCase):
 class TestScale(unittest.TestCase):
     def test_scale_up(self):
         c = Coordinates()
-        c.translate(2, 3)
         c.scale(2)
+        c.translate(2, 3)
         pos = c.pos
         self.assertEqual(pos[0], 4)
         self.assertEqual(pos[1], 6)
 
     def test_scale_down(self):
         c = Coordinates()
-        c.translate(2, 3)
         c.scale(.5)
+        c.translate(2, 3)
         pos = c.pos
         self.assertEqual(pos[0], 1)
         self.assertEqual(pos[1], 1.5)
-
-    def test_scale_multiple(self):
-        c = Coordinates()
-        c.translate(1, 2)
-        for i in range(1, 5):
-            c.scale(2)
-            self.assertEqual(c.pos[0], 1 * 2**i)
-            self.assertEqual(c.pos[1], 2 * 2**i)
 
 
 class TestRotate(unittest.TestCase):

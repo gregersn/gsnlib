@@ -25,8 +25,8 @@ class Coordinates(object):
 
     def scale(self, v):
         s = np.identity(3)
-        s[2, 0] = v
-        s[2, 1] = v
+        s[0, 0] = v
+        s[1, 1] = v
         self.matrix = self.matrix.dot(s)
 
     def push(self):
