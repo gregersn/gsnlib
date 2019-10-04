@@ -13,7 +13,7 @@ class TestIdentity(unittest.TestCase):
         pos = c.pos
         self.assertEqual(pos[0], 0)
         self.assertEqual(pos[1], 0)
-    
+
     def test_reset(self):
         c = Coordinates()
         pos = c.pos
@@ -92,12 +92,12 @@ class TestRotate(unittest.TestCase):
     def test_rotate_multiple(self):
         c = Coordinates()
         c.translate(1, 0)
-        for i in range(8):
+        for _ in range(8):
             c.rotate(math.pi / 4)
 
         self.assertLess(abs(c.pos[0] - 1), epsilon)
         self.assertLess(c.pos[1], epsilon)
-    
+
     def test_rotate_translate(self):
         c = Coordinates()
 
@@ -110,7 +110,6 @@ class TestRotate(unittest.TestCase):
         c.translate(0, 10)
         self.assertEqual(c.x, -10)
         self.assertEqual(c.y, 0)
-
 
 
 class TestTranslateRotateSequence(unittest.TestCase):
@@ -149,16 +148,16 @@ class TestTranslateRotateSequence(unittest.TestCase):
 
         for i in range(1, 10):
             c.translate(10, 0)
-            
+
             self.assertAlmostEqual(c.x, 10 * i)
             self.assertAlmostEqual(c.y, 10 * (i - 1))
 
             c.rotate(math.pi / 2)
             c.translate(10, 0)
-            
+
             self.assertAlmostEqual(c.x, 10 * i)
             self.assertAlmostEqual(c.y, 10 * i)
-            
+
             c.rotate(-math.pi / 2)
 
 

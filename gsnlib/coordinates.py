@@ -1,10 +1,11 @@
 import numpy as np
 
+
 class Coordinates(object):
     def __init__(self):
         self.matrix = np.identity(3)
         self.stack = []
-    
+
     def reset(self):
         self.matrix = np.identity(3)
         self.stack = []
@@ -31,7 +32,7 @@ class Coordinates(object):
 
     def push(self):
         self.stack.append(self.matrix.copy())
-    
+
     def pop(self):
         self.matrix = self.stack.pop()
 
@@ -39,16 +40,15 @@ class Coordinates(object):
     def pos(self):
         pos = np.array([0, 0, 1])
         return self.matrix.dot(pos).round(3)[0:2]
-    
+
     @property
     def pos3d(self):
         return np.append(self.pos, 0)
-    
+
     @property
     def x(self):
         return self.pos[0]
-    
+
     @property
     def y(self):
         return self.pos[1]
-

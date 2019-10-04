@@ -2,6 +2,7 @@ import unittest
 
 from gsnlib.lsystem import LSystem
 
+
 class TestLSystem(unittest.TestCase):
     def test_add_rules(self):
         s = LSystem('a')
@@ -26,4 +27,3 @@ class TestLSystem(unittest.TestCase):
 
         s.reset()
         self.assertEqual(s.state, 'a')
-

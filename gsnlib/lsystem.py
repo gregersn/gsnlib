@@ -3,7 +3,7 @@ class LSystem(object):
         self.axiom = axiom
         self.state = axiom
         self.rules = {}
-    
+
     def reset(self):
         self.state = self.axiom
 
