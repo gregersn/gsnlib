@@ -32,13 +32,48 @@ class TestWireNetwork(unittest.TestCase):
         self.assertEqual(len(n.vertices), 8)
         self.assertEqual(len(n.edges), 7)
 
-        for pair in zip(n.vertices, [Point([2, 2]), Point([2, -2]),
-                                     Point([4, 2]), Point([4, -2]),
+        for pair in zip(sorted(n.vertices), sorted([Point([2, -2]), Point([2, 2]),
+                                     Point([4, -2]), Point([4, 2]),
                                      Point([0, 0]), Point([10, 0]),
-                                     Point([2, 0]), Point([4, 0])]):
-            self.assertAlmostEqual(pair[0].dist(pair[1]), 0)
+                                     Point([2, 0]), Point([4, 0])])):
+            self.assertAlmostEqual(pair[0].dist(pair[1]), 0, msg=n.vertices)
 
         self.assertListEqual(n.edges, [Edge(0, 6), Edge(1, 6),
                                        Edge(2, 7), Edge(3, 7),
                                        Edge(4, 6), Edge(6, 7),
                                        Edge(7, 5)])
+
+    def test_end_to_end(self):
+        n = WireNetwork()
+        n.add_segment([0, 0], [10, 10])
+
+        self.assertEqual(len(n.vertices), 2)
+        self.assertEqual(len(n.edges), 1)
+
+        n.add_segment([10, 10], [20, 20])
+
+        self.assertEqual(len(n.vertices), 3)
+        self.assertEqual(len(n.edges), 2, n.edges)
+
+    def test_overlapping(self):
+        n = WireNetwork()
+        n.add_segment([0, 0], [10, 10])
+        n.add_segment([5, 5], [15, 15])
+
+        self.assertEqual(len(n.vertices), 4, n.vertices)
+        self.assertEqual(len(n.edges), 3, n.edges)
+
+    def test_within(self):
+        n = WireNetwork()
+        n.add_segment([4, 4], [8, 8])
+        n.add_segment([0, 0], [10, 10])
+
+        self.assertEqual(len(n.vertices), 4, n.vertices)
+        self.assertEqual(len(n.edges), 3, n.edges)
+
+        n = WireNetwork()
+        n.add_segment([0, 0], [10, 10])
+        n.add_segment([4, 4], [8, 8])
+
+        self.assertEqual(len(n.vertices), 2, n.vertices)
+        self.assertEqual(len(n.edges), 1, n.edges)

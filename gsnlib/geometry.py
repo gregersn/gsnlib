@@ -88,7 +88,6 @@ def line_intersection(a: Point, b: Point, c: Point, d: Point) -> Point:
 
         left = max(a, c)
         right = min(b, d)
-
         return (left, right)
     else:
         x = -det(m.c, m.b, n.c, n.b) / zn
