@@ -30,20 +30,54 @@ class WireNetwork(object):
         if 'vertices' in data:
             self._vertices = [Point(v) for v in data['vertices']]
 
-    def add_vertex(self, point: Point):
-        for i, v in enumerate(self.vertices):
-            if v.dist(point) < self.tolerance:
-                return i
-
-        self._vertices.append(point)
-        return len(self._vertices) - 1
-
     def add_segment(self, p1, p2):
-        self._segment_queue.append((Point(p1), Point(p2)))
+        self.add_to_segment_queue((Point(p1), Point(p2)))
+
         while len(self._segment_queue) > 0:
             p1, p2 = self._segment_queue.pop()
             self.add_edge(p1, p2)
 
+
+    def add_to_segment_queue(self, seg):
+        p1, p2 = seg
+
+        if p2 < p1:
+            p1, p2 = p2, p1
+
+        # Check if points exists
+        p1_i = self.add_vertex(seg[0], add=False)
+        p2_i = self.add_vertex(seg[1], add=False)
+
+        # Check if segment exists
+        if p1_i is not None and p2_i is not None:
+            for s in self._edges:
+                if s == Edge(p1_i, p2_i):
+                    return
+
+        # Check length of segment
+        if p1.dist(p2) < self.tolerance:
+            return
+        
+        # Check if segment already in queue
+        for s in self._segment_queue:
+            if s == seg:
+                return
+
+        # Add segment to queue
+        self._segment_queue.append(seg)
+
+
+    def add_vertex(self, point: Point, add=True):
+        for i, v in enumerate(self.vertices):
+            if v.dist(point) < self.tolerance:
+                return i
+    
+        if add:
+            self._vertices.append(point)
+            return len(self._vertices) - 1
+        else:
+            return None
+        
     def _add_edge(self, e: Edge):
         for other in self._edges:
             if e.a == other.a and e.b == other.b:
@@ -87,27 +121,33 @@ class WireNetwork(object):
 
                         # This is one contained inside the other
                         if new_edge_length > prev_edge_length:
-                            self._segment_queue.append(
-                                (p1, self._vertices[other.a]))
-                            self._segment_queue.append(
-                                (self._vertices[other.b], p2))
+                            p3 = self._vertices[other.a]
+                            p4 = self._vertices[other.b]
+                            if p4 < p3:
+                                p3, p4 = p4, p3
+                            if p2 < p1:
+                                p1, p2 = p2, p1
+                            self.add_to_segment_queue(
+                                (p1, p3))
+                            self.add_to_segment_queue(
+                                (p4, p2))
                     else:
-                        print("Overlap")
+                        # Overlap
                         if p1.x < p3.x:
                             self._edges.remove(other)
-                            self._segment_queue.append(
+                            self.add_to_segment_queue(
                                 (p1, self._vertices[other.a]))
-                            self._segment_queue.append(
+                            self.add_to_segment_queue(
                                 (self._vertices[other.a], p2))
-                            self._segment_queue.append(
+                            self.add_to_segment_queue(
                                 (p2, self._vertices[other.b]))
                         else:
                             self._edges.remove(other)
-                            self._segment_queue.append(
+                            self.add_to_segment_queue(
                                 (self._vertices[other.a], p1))
-                            self._segment_queue.append(
+                            self.add_to_segment_queue(
                                 (p1, self._vertices[other.b]))
-                            self._segment_queue.append(
+                            self.add_to_segment_queue(
                                 (self._vertices[other.b], p2))
                 else:
                     raise Exception("WTF")
@@ -117,8 +157,6 @@ class WireNetwork(object):
                 self._add_edge(e)
 
         if len(intersections) > 0:
-            print("Intersections: {}".format(len(intersections)))
-
             p1_i = self.add_vertex(p1)
             p2_i = self.add_vertex(p2)
             edge = Edge(p1_i, p2_i)
