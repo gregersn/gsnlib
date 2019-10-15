@@ -37,7 +37,6 @@ class WireNetwork(object):
             p1, p2 = self._segment_queue.pop()
             self.add_edge(p1, p2)
 
-
     def add_to_segment_queue(self, seg):
         p1, p2 = seg
 

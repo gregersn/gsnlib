@@ -21,7 +21,7 @@ class Point(object):
                 or (abs(self.x - other.x) < EPS and self.y < other.y - EPS))
 
     def __repr__(self):
-        return "Point: {}, {}".format(self.x, self.y)
+        return "Point([{}, {}])".format(self.x, self.y)
 
     def __sub__(self, other):
         return Point([self.x - other.x, self.y - other.y])

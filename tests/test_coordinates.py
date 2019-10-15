@@ -14,6 +14,11 @@ class TestIdentity(unittest.TestCase):
         self.assertEqual(pos[0], 0)
         self.assertEqual(pos[1], 0)
 
+        pos3d = c.pos3d
+        self.assertEqual(pos3d[0], 0)
+        self.assertEqual(pos3d[1], 0)
+        self.assertEqual(pos3d[2], 0)
+
     def test_reset(self):
         c = Coordinates()
         pos = c.pos
