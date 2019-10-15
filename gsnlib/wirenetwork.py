@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 from gsnlib.geometry import line_intersection
-from gsnlib.geometry import Point
+from gsnlib.vector import Vector
 
 
 @dataclass
@@ -12,7 +12,7 @@ class Edge:
 
 class WireNetwork(object):
     def __init__(self, tolerance=0.1):
-        self._vertices: List[Point] = []
+        self._vertices: List[Vector] = []
         self._edges: List[Edge] = []
         self.tolerance = tolerance
         self._segment_queue = []
@@ -28,10 +28,10 @@ class WireNetwork(object):
             self._edges = [Edge(e[0], e[1]) for e in data['edges']]
 
         if 'vertices' in data:
-            self._vertices = [Point(v) for v in data['vertices']]
+            self._vertices = [Vector(v) for v in data['vertices']]
 
     def add_segment(self, p1, p2):
-        self.add_to_segment_queue((Point(p1), Point(p2)))
+        self.add_to_segment_queue((Vector(p1), Vector(p2)))
 
         while len(self._segment_queue) > 0:
             p1, p2 = self._segment_queue.pop()
@@ -43,7 +43,7 @@ class WireNetwork(object):
         if p2 < p1:
             p1, p2 = p2, p1
 
-        # Check if points exists
+        # Check if Vectors exists
         p1_i = self.add_vertex(seg[0], add=False)
         p2_i = self.add_vertex(seg[1], add=False)
 
@@ -65,14 +65,13 @@ class WireNetwork(object):
         # Add segment to queue
         self._segment_queue.append(seg)
 
-
-    def add_vertex(self, point: Point, add=True):
+    def add_vertex(self, Vector: Vector, add=True):
         for i, v in enumerate(self.vertices):
-            if v.dist(point) < self.tolerance:
+            if v.dist(Vector) < self.tolerance:
                 return i
     
         if add:
-            self._vertices.append(point)
+            self._vertices.append(Vector)
             return len(self._vertices) - 1
         else:
             return None
@@ -86,8 +85,8 @@ class WireNetwork(object):
         self._edges.append(e)
 
     def add_edge(self, p1, p2):
-        # Loop through all existing points, checking
-        # if new points already exists close
+        # Loop through all existing Vectors, checking
+        # if new Vectors already exists close
         # Then return indices or add new
 
         if p2 < p1:
@@ -105,7 +104,7 @@ class WireNetwork(object):
 
             if i is not None:
                 clear = False
-                if type(i) == Point:
+                if type(i) == Vector:
                     intersections.append((other, i))
                 elif type(i) == tuple and len(i) == 2:
                     new_edge_length = p1.dist(p2)
@@ -202,7 +201,7 @@ class WireNetwork(object):
                 p4 = self._vertices[edge_b.b]
 
                 li = line_intersection(p1, p2, p3, p4)
-                if li is not None and type(li) == Point:
+                if li is not None and type(li) == Vector:
                     raise Exception(li)
 
     @property

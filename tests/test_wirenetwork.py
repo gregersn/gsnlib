@@ -2,7 +2,7 @@ import unittest
 import random
 
 from gsnlib.wirenetwork import WireNetwork, Edge
-from gsnlib.geometry import Point
+from gsnlib.vector import Vector
 
 
 class TestWireNetworkLoadSave(unittest.TestCase):
@@ -71,12 +71,12 @@ class TestWireNetwork(unittest.TestCase):
         self.assertEqual(len(n.vertices), 8)
         self.assertEqual(len(n.edges), 7)
 
-        for pair in zip(sorted(n.vertices), sorted([Point([2, -2]), Point([2, 2]),
-                                                    Point(
-                                                        [4, -2]), Point([4, 2]),
-                                                    Point([0, 0]), Point(
+        for pair in zip(sorted(n.vertices), sorted([Vector([2, -2]), Vector([2, 2]),
+                                                    Vector(
+                                                        [4, -2]), Vector([4, 2]),
+                                                    Vector([0, 0]), Vector(
                                                         [10, 0]),
-                                                    Point([2, 0]), Point([4, 0])])):
+                                                    Vector([2, 0]), Vector([4, 0])])):
             self.assertAlmostEqual(pair[0].dist(pair[1]), 0, msg=n.vertices)
 
         self.assertListEqual(n.edges, [Edge(0, 6), Edge(1, 6),
