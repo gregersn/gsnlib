@@ -31,7 +31,7 @@ class WireNetwork(object):
             self._vertices = [Vector(v) for v in data['vertices']]
 
     def add_segment(self, p1, p2):
-        self.add_to_segment_queue((Vector(p1), Vector(p2)))
+        self.add_to_segment_queue((Vector.from_array(p1), Vector.from_array(p2)))
 
         while len(self._segment_queue) > 0:
             p1, p2 = self._segment_queue.pop()

@@ -29,7 +29,7 @@ class TestWireNetworkLoadSave(unittest.TestCase):
     def test_from_to_random(self):
         n = WireNetwork()
 
-        for _ in range(100):
+        for _ in range(10):
             n.add_segment([random.randrange(-100, 100),
                            random.randrange(-100, 100)],
                           [random.randrange(-100, 100),
