@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
+
+import math
+import sys
+from .vector import Vector
+
+
+def pointlinedist(p: Vector, p1: Vector, p2: Vector):
+    dy = p2.y - p1.y
+    dx = p2.x - p1.x
+
+    a = abs(dy * p.x - dx * p.y + p2.x * p1.y - p2.y * p1.x)
+    b = math.sqrt(dy * dy + dx * dx)
+
+    if b < sys.float_info.epsilon:
+        return p.dist(p1)
+    return a / b
+
+
+def reduce_shapes(shapes, tolerance):
+    out = [[reduce_points(part, tolerance) for part in shape]
+           for shape in shapes]
+    return out
+
+
+def reduce_points(points, tolerance):
+    dmax = 0
+    index = 0
+    end = len(points) - 1
+
+    p0 = points[0]
+    p1 = points[end]
+
+    for i in range(1, end):
+        d = pointlinedist(points[i], p0, p1)
+        if d > dmax:
+            dmax = d
+            index = i
+
+    if dmax > tolerance:
+        res1 = reduce_points(points[0:index + 1], tolerance)
+        res2 = reduce_points(points[index:], tolerance)
+        outpoints = res1 + res2[1:]
+    else:
+        outpoints = [p0, p1]
+
+    return outpoints
+
+
+def main():
+    pass
+
+
+if __name__ == '__main__':
+    main()
