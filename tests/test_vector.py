@@ -15,10 +15,15 @@ class TestVector(unittest.TestCase):
 
     def test_repr(self):
         p = Vector(0, 0)
-        self.assertEqual(repr(p), "Vector(0, 0, 0)")
+        self.assertEqual(repr(p), "Vector(0.0, 0.0, 0.0)")
 
         p = Vector(-4, 3)
-        self.assertEqual(repr(p), "Vector(-4, 3, 0)")
+        self.assertEqual(repr(p), "Vector(-4.0, 3.0, 0.0)")
+
+        p = Vector([-4, 3])
+        self.assertEqual(repr(p), "Vector(-4.0, 3.0)")
+
+
 
     def test_properties(self):
         a = random.random()
@@ -57,3 +62,15 @@ class TestVector(unittest.TestCase):
 
         self.assertAlmostEqual(v3.x, 0)
         self.assertAlmostEqual(v3.y, 0)
+
+    def test_translate(self):
+        v1 = Vector(0, 0)
+        v1.translate(3, 5)
+        self.assertEqual(v1.x, 3)
+        self.assertEqual(v1.y, 5)
+
+    def test_rotate(self):
+        v1 = Vector(10, 0)
+        v1.rotate(3.1415926)
+        self.assertAlmostEqual(v1.x, -10, places=5)
+        self.assertAlmostEqual(v1.y, 0, places=5)

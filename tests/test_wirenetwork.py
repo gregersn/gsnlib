@@ -120,3 +120,19 @@ class TestWireNetwork(unittest.TestCase):
 
         self.assertEqual(len(n.vertices), 2, n.vertices)
         self.assertEqual(len(n.edges), 1, n.edges)
+
+    def test_add_existing(self):
+        n = WireNetwork()
+        n.add_segment([4, 4], [8, 8])
+        n.add_segment([4, 4], [8, 8])
+
+        self.assertEqual(len(n.vertices), 2, n.vertices)
+        self.assertEqual(len(n.edges), 1, n.edges)
+
+    def test_add_small_segment(self):
+        n = WireNetwork()
+        n.add_segment([4, 4], [8, 8])
+        n.add_segment([4, 4], [4.0001, 4])
+
+        self.assertEqual(len(n.vertices), 2, n.vertices)
+        self.assertEqual(len(n.edges), 1, n.edges)

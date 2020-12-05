@@ -1,6 +1,16 @@
 from gsnlib.geometry import Segment, Vector
 
 
+def test_repr():
+    vertices = [
+        Vector(0, 0),
+        Vector(0, 10)
+    ]
+    segment = Segment(vertices=vertices)
+
+    assert repr(segment) == "<Segment (Vector(0.0, 0.0, 0.0), Vector(0.0, 10.0, 0.0))>", repr(segment)
+
+
 def test_new_segment():
     vertices = [
         Vector(0, 0),

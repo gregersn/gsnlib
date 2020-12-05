@@ -6,11 +6,11 @@ EPS = 1E-16
 
 
 class Vector(object):
-    def __init__(self, x=0, y=0, z=0):
+    def __init__(self, x=0.0, y=0.0, z=0.0):
         if isinstance(x, list):
-            self.v = np.array(x)
+            self.v = np.array(x, dtype=np.float)
         else:
-            self.v = np.array([x, y, z])
+            self.v = np.array([x, y, z], dtype=np.float)
 
     @classmethod
     def from_array(cls, v):
@@ -29,26 +29,43 @@ class Vector(object):
         t = self - other
         return math.sqrt(t.x * t.x + t.y * t.y)
 
-    def translate(self, x, y):
-        pass
+    def translate(self, x, y, z=0):
+        self.x += x
+        self.y += y
+        self.z += z
 
     def rotate(self, a):
-        pass
+        self.v[0:2] = self.v[0:2].dot(np.array([[np.cos(a), -np.sin(a)],[np.sin(a), np.cos(a)]]))
 
     @property
     def x(self):
         return self.v[0]
 
+    @x.setter
+    def x(self, x):
+        self.v[0] = x
+
     @property
     def y(self):
         return self.v[1]
+
+    @y.setter
+    def y(self, y):
+        self.v[1] = y
 
     @property
     def z(self):
         return self.v[2]
 
+    @z.setter
+    def z(self, z):
+        self.v[2] = z
+
     def __repr__(self):
-        return "Vector({}, {}, {})".format(*self.v)
+        if len(self.v) == 2:
+            return "Vector({}, {})".format(*self.v)
+        else:
+            return "Vector({}, {}, {})".format(*self.v)
 
     def clone(self) -> Vector:
         return Vector(self.x, self.y)
