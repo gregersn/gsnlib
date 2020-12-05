@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Union
 from gsnlib.geometry import line_intersection
 from gsnlib.vector import Vector
 
@@ -31,7 +31,8 @@ class WireNetwork(object):
             self._vertices = [Vector(v) for v in data['vertices']]
 
     def add_segment(self, p1, p2):
-        self.add_to_segment_queue((Vector.from_array(p1), Vector.from_array(p2)))
+        self.add_to_segment_queue((Vector.from_array(p1),
+                                   Vector.from_array(p2)))
 
         while len(self._segment_queue) > 0:
             p1, p2 = self._segment_queue.pop()
@@ -56,7 +57,7 @@ class WireNetwork(object):
         # Check length of segment
         if p1.dist(p2) < self.tolerance:
             return
-        
+
         # Check if segment already in queue
         for s in self._segment_queue:
             if s == seg:
@@ -65,17 +66,17 @@ class WireNetwork(object):
         # Add segment to queue
         self._segment_queue.append(seg)
 
-    def add_vertex(self, Vector: Vector, add=True):
+    def add_vertex(self, Vector: Vector, add=True) -> Union[int, None]:
         for i, v in enumerate(self.vertices):
             if v.dist(Vector) < self.tolerance:
                 return i
-    
+
         if add:
             self._vertices.append(Vector)
             return len(self._vertices) - 1
         else:
             return None
-        
+
     def _add_edge(self, e: Edge):
         for other in self._edges:
             if e.a == other.a and e.b == other.b:
@@ -106,7 +107,7 @@ class WireNetwork(object):
                 clear = False
                 if type(i) == Vector:
                     intersections.append((other, i))
-                elif type(i) == tuple and len(i) == 2:
+                elif isinstance(i, tuple) and len(i) == 2:
                     new_edge_length = p1.dist(p2)
                     prev_edge_length = p3.dist(p4)
 
@@ -114,8 +115,10 @@ class WireNetwork(object):
                         # Most likely end-to-end
                         intersections.append((other, i[0]))
 
-                    elif ((p1.dist(i[0]) < self.tolerance and p2.dist(i[1]) < self.tolerance) or
-                          (p3.dist(i[0]) < self.tolerance and p4.dist(i[1]) < self.tolerance)):
+                    elif ((p1.dist(i[0]) < self.tolerance
+                           and p2.dist(i[1]) < self.tolerance) or
+                          (p3.dist(i[0]) < self.tolerance
+                           and p4.dist(i[1]) < self.tolerance)):
 
                         # This is one contained inside the other
                         if new_edge_length > prev_edge_length:
@@ -157,6 +160,8 @@ class WireNetwork(object):
         if len(intersections) > 0:
             p1_i = self.add_vertex(p1)
             p2_i = self.add_vertex(p2)
+            if p1_i is None or p2_i is None:
+                return
             edge = Edge(p1_i, p2_i)
 
             px_i = []
@@ -168,14 +173,15 @@ class WireNetwork(object):
                 p0_i = self.add_vertex(p0)
                 px_i.append(p0_i)
 
-                if p3_i != p0_i:
+                if p3_i != p0_i and p0_i is not None:
                     self._add_edge(Edge(p3_i, p0_i))
 
-                if p4_i != p0_i:
+                if p4_i != p0_i and p0_i is not None:
                     self._add_edge(Edge(p4_i, p0_i))
 
             px_sorted = sorted(px_i,
-                               key=lambda x: self._vertices[x].dist(self.vertices[p1_i]))
+                               key=lambda x: self._vertices[x]
+                                                 .dist(self.vertices[p1_i if p1_i is not None else x]))
 
             prev_x = p1_i
             for px in px_sorted:
@@ -188,6 +194,9 @@ class WireNetwork(object):
         if clear:
             p1_i = self.add_vertex(p1)
             p2_i = self.add_vertex(p2)
+            if p2_i is None or p1_i is None:
+                return
+
             edge = Edge(p1_i, p2_i)
 
             self._add_edge(edge)

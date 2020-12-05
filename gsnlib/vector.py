@@ -17,16 +17,16 @@ class Vector(object):
         vec.v = np.array(v)
         return vec
 
-    def __sub__(self, other):
+    def __sub__(self, other: "Vector"):
         return self.__class__.from_array(self.v - other.v)
-    
-    def __lt__(self, other):
+
+    def __lt__(self, other: "Vector"):
         return (self.x < other.x - EPS
                 or (abs(self.x - other.x) < EPS and self.y < other.y - EPS))
-    
-    def dist(self, other) -> float:
+
+    def dist(self, other: "Vector") -> float:
         t = self - other
-        return math.sqrt(t.x * t.x + t.y * t.y)        
+        return math.sqrt(t.x * t.x + t.y * t.y)
 
     def translate(self, x, y):
         pass

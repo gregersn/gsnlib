@@ -1,5 +1,6 @@
 
 import math
+from typing import Tuple, Union
 from .vector import Vector
 
 EPS = 1E-12
@@ -36,11 +37,14 @@ def det(a, b, c, d):
     return a * d - b * c
 
 
-def betw(l, r, x):
-    return min(l, r) <= x + EPS and x <= max(l, r) + EPS
+def betw(left, right, x):
+    return min(left, right) <= x + EPS and x <= max(left, right) + EPS
 
 
-def line_intersection(a: Vector, b: Vector, c: Vector, d: Vector) -> Vector:
+def line_intersection(a: Vector,
+                      b: Vector,
+                      c: Vector,
+                      d: Vector) -> Union[Tuple[Vector, Vector], Vector, None]:
     if (not line_intersect_1d(a.x, b.x, c.x, d.x)
             or not line_intersect_1d(a.y, b.y, c.y, d.y)):
         return None
