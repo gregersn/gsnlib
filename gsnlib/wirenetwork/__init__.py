@@ -1,7 +1,64 @@
 from dataclasses import dataclass
 from typing import List, Union
-from gsnlib.geometry import line_intersection
 from gsnlib.vector import Vector
+from .line import Line
+
+from typing import Tuple
+
+EPS = 1E-12
+
+
+def line_intersect_1d(a, b, c, d):
+    if a > b:
+        a, b = b, a
+    if c > d:
+        c, d = d, c
+
+    return max(a, c) <= min(b, d) + EPS
+
+
+def det(a, b, c, d):
+    return a * d - b * c
+
+
+def betw(left, right, x):
+    return min(left, right) <= x + EPS and x <= max(left, right) + EPS
+
+
+def line_intersection(a: Vector,
+                      b: Vector,
+                      c: Vector,
+                      d: Vector) -> Union[Tuple[Vector, Vector], Vector, None]:
+    if (not line_intersect_1d(a.x, b.x, c.x, d.x)
+            or not line_intersect_1d(a.y, b.y, c.y, d.y)):
+        return None
+
+    m = Line(a, b)
+    n = Line(c, d)
+
+    zn = det(m.a, m.b, n.a, n.b)
+
+    if (abs(zn) < EPS):
+        if (abs(m.dist(c)) > EPS or abs(n.dist(a)) > EPS):
+            return None
+
+        if(b < a):
+            a, b = b, a
+
+        if(d < c):
+            c, d = d, c
+
+        left = max(a, c)
+        right = min(b, d)
+        return (left, right)
+    else:
+        x = -det(m.c, m.b, n.c, n.b) / zn
+        y = -det(m.a, m.c, n.a, n.c) / zn
+        if (betw(a.x, b.x, x) and betw(a.y, b.y, y) and
+                betw(c.x, d.x, x) and betw(c.y, d.y, y)):
+            return Vector([x, y])
+
+    return None
 
 
 @dataclass

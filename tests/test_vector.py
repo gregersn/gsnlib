@@ -48,3 +48,12 @@ class TestVector(unittest.TestCase):
         a = Vector(0, 0)
         b = Vector(3, 4)
         self.assertEqual(a.dist(b), 5)
+
+    def test_lerp(self):
+        v1 = Vector(0, 10)
+        v2 = Vector(0, -10)
+
+        v3 = v1.lerp(v2, .5)
+
+        self.assertAlmostEqual(v3.x, 0)
+        self.assertAlmostEqual(v3.y, 0)

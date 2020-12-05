@@ -1,9 +1,9 @@
 import unittest
-from gsnlib.geometry import line_intersection
+from gsnlib.wirenetwork import line_intersection
 from gsnlib.vector import Vector
 
 
-class TestLineIntersection(unittest.TestCase):
+class TestSegmentIntersection(unittest.TestCase):
     def test_intersection(self):
         i = line_intersection(Vector([10, 10]), Vector([-10, -10]),
                               Vector([10, -10]), Vector([-10, 10]))
