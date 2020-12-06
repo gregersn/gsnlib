@@ -41,3 +41,16 @@ def test_segment_flip():
     assert segment.line.origin == Vector(0, 0).negated()
     assert segment.line.direction == Vector(0, 1).negated()
     assert segment.line.normal == Vector(1, 0).negated()
+
+
+def test_segment_copy():
+    s1 = Segment([
+        Vector(0, 0),
+        Vector(0, 10)
+    ])
+
+    s2 = s1.clone()
+
+    assert s1 == s2
+    assert s1 is not s2
+

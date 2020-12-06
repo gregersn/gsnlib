@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import logging
 from typing import List, Union
 from gsnlib.geometry.segment import Segment
 from gsnlib.geometry.line import Line
+
+logger = logging.getLogger(__file__)
 
 
 class Node():
@@ -17,14 +20,35 @@ class Node():
     def __repr__(self) -> str:
         return f"<Node({self.segments})>"
 
+    def __eq__(self, o) -> bool:
+        equal = True
+
+        equal = o is not None
+        equal = equal and self is not None
+
+        equal = equal and self.line == o.line
+        equal = equal and self.right == o.right
+        equal = equal and self.left == o.left
+        equal = equal and self.segments == o.segments
+
+        return equal
+
     def clone(self):
-        raise NotImplementedError
+        node = Node()
+        node.line = self.line.clone() if self.line is not None else None
+        node.left = self.left.clone() if self.left is not None else None
+        node.right = self.right.clone() if self.right is not None else None
+
+        node.segments = [s.clone() for s in self.segments]
+        return node
 
     def invert(self):
         for i in range(len(self.segments)):
             self.segments[i].flip()
 
-        self.line.flip()
+        if self.line:
+            self.line.flip()
+
         if self.right:
             self.right.invert()
 
@@ -34,7 +58,7 @@ class Node():
         self.right, self.left = self.left, self.right
 
     def clip_segments(self, segments: List[Segment]) -> List[Segment]:
-        print("node-clip_segments")
+        logger.debug("node-clip_segments")
         if not self.line:
             return segments.copy()
 
@@ -74,7 +98,7 @@ class Node():
     def build(self, segments: List[Segment], level=1):
         if level > 50:
             raise RecursionError
-        print("node-build")
+        logger.debug("node-build")
         if not segments or len(segments) < 1:
             return
 

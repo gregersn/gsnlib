@@ -1,13 +1,18 @@
 from __future__ import annotations
+# from gsnlib.constants import EPSILON
+import logging
 
 from ..vector import Vector
 from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
     from .segment import Segment
 
-from gsnlib.geometry import segment as s
+# from gsnlib.constants import EPSILON
 
-EPSILON = 1e-5
+from gsnlib.geometry import segment as s
+from gsnlib.constants import EPSILON
+
+logger = logging.getLogger(__file__)
 
 
 class Line():
@@ -27,10 +32,10 @@ class Line():
     @classmethod
     def from_points(cls, a: Vector, b: Vector) -> Line:
         dir = b.minus(a).unit()
-        return cls(a, dir)
+        return Line(a, dir)
 
     def clone(self) -> Line:
-        print("line-clone")
+        logger.debug("line-clone")
         return Line(self.origin.clone(), self.direction.clone())
 
     def flip(self):
@@ -42,7 +47,7 @@ class Line():
                       colinear_left: List[Segment],
                       right: List[Segment],
                       left: List[Segment]):
-        print("line-split_segment")
+        logger.debug("line-split_segment")
         COLINEAR = 0
         RIGHT = 1
         LEFT = 2
@@ -62,7 +67,7 @@ class Line():
             types.append(type)
 
         if segment_type == COLINEAR:
-            print("COLINEAR")
+            logger.debug("COLINEAR")
             if t != 0:
                 if t > 0:
                     colinear_right.append(segment)
@@ -75,10 +80,10 @@ class Line():
                     colinear_right.append(segment)
 
         elif segment_type == RIGHT:
-            print("RIGHT")
+            logger.debug("RIGHT")
             right.append(segment)
         elif segment_type == LEFT:
-            print("LEFT")
+            logger.debug("LEFT")
             left.append(segment)
         elif segment_type == SPANNING:
             new_right = []
@@ -99,7 +104,8 @@ class Line():
                 new_left.append(vj)
 
             if ti == RIGHT and tj == LEFT:
-                t = self.normal.dot(self.origin.minus(vi)) / self.normal.dot(vj.minus(vi))
+                t = (self.normal.dot(self.origin.minus(vi))) \
+                                    / self.normal.dot(vj.minus(vi))
                 v = vi.lerp(vj, t)
                 new_right.append(vi)
                 new_right.append(v)
@@ -107,7 +113,8 @@ class Line():
                 new_left.append(vj)
 
             if ti == LEFT and tj == RIGHT:
-                t = self.normal.dot(self.origin.minus(vi)) / self.normal.dot(vj.minus(vi))
+                t = (self.normal.dot(self.origin.minus(vi))) \
+                                    / self.normal.dot(vj.minus(vi))
                 v = vi.lerp(vj, t)
                 new_left.append(vi)
                 new_left.append(v)

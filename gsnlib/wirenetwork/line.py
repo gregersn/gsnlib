@@ -1,7 +1,6 @@
 import math
 from ..vector import Vector
-
-EPS = 1E-12
+from gsnlib.constants import EPSILON
 
 
 class Line(object):
@@ -13,7 +12,7 @@ class Line(object):
 
     def norm(self):
         z = math.sqrt(self.a * self.a + self.b * self.b)
-        if (abs(z) > EPS):
+        if (abs(z) > EPSILON):
             self.a /= z
             self.b /= z
             self.c /= z

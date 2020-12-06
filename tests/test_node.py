@@ -17,6 +17,23 @@ def test_init_node():
     assert n.left
 
 
+def test_node_invert():
+    segments = [
+        Segment([Vector(0, 0), Vector(0, 10)]),
+        Segment([Vector(0, 10), Vector(10, 10)]),
+        Segment([Vector(10, 10), Vector(0, 0)])
+    ]
+    n = Node(segments)
+    n.invert()
+
+    assert n is not None
+
+    assert len(n.segments) == 1
+    assert n.line == Segment([Vector(0, 0), Vector(0, -10)]).line
+    assert n.right
+    assert not n.left
+
+
 def test_init_node_2():
     segments = [
         Segment([Vector(0, 0), Vector(0, 10)]),
@@ -57,3 +74,17 @@ def test_some_node_stuff_2():
     ]
 
     n.build(segments.copy())
+
+
+def test_node_clone():
+    segments = [
+        Segment([Vector(0, 0), Vector(0, 10)]),
+        Segment([Vector(0, 10), Vector(10, 10)]),
+        Segment([Vector(10, 10), Vector(0, 0)])
+    ]
+    n = Node(segments)
+
+    m = n.clone()
+
+    assert m == n
+    assert m is not n

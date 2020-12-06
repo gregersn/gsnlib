@@ -74,3 +74,10 @@ class TestVector(unittest.TestCase):
         v1.rotate(3.1415926)
         self.assertAlmostEqual(v1.x, -10, places=5)
         self.assertAlmostEqual(v1.y, 0, places=5)
+
+    def test_copy(self):
+        v1 = Vector(0, 0)
+        v2 = v1.copy()
+
+        self.assertEqual(v2, v1)
+        self.assertIsNot(v1, v2)

@@ -19,3 +19,25 @@ class Segment:
     def flip(self):
         self.vertices.reverse()
         self.line.flip()
+
+    def __eq__(self, o) -> bool:
+        if len(self.vertices) != len(o.vertices):
+            return False
+
+        if self.shared is not None or o.shared is not None:
+            if len(self.shared) != len(o.shared):
+                return False
+
+        if self.line != o.line:
+            return False
+
+        for i in range(len(self.vertices)):
+            if self.vertices[i] != o.vertices[i]:
+                return False
+
+        if self.shared is not None:
+            for i in range(len(self.shared)):
+                if self.shared[i] != o.shared[i]:
+                    return False
+
+        return True

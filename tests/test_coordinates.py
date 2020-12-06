@@ -1,10 +1,11 @@
 import unittest
 import math
-import sys
+
+from gsnlib.constants import EPSILON
 from gsnlib.coordinates import Coordinates
 
 
-epsilon = sys.float_info.epsilon * 10
+epsilon = EPSILON * 10
 
 
 class TestIdentity(unittest.TestCase):

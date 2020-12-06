@@ -2,7 +2,7 @@ from __future__ import annotations
 import math
 import numpy as np
 
-EPS = 1E-16
+from gsnlib.constants import EPSILON
 
 
 class Vector(object):
@@ -22,8 +22,9 @@ class Vector(object):
         return self.__class__.from_array(self.v - other.v)
 
     def __lt__(self, other: "Vector"):
-        return (self.x < other.x - EPS
-                or (abs(self.x - other.x) < EPS and self.y < other.y - EPS))
+        return (self.x < other.x - EPSILON
+                or (abs(self.x - other.x) < EPSILON
+                    and self.y < other.y - EPSILON))
 
     def dist(self, other: "Vector") -> float:
         t = self - other
@@ -35,7 +36,8 @@ class Vector(object):
         self.z += z
 
     def rotate(self, a):
-        self.v[0:2] = self.v[0:2].dot(np.array([[np.cos(a), -np.sin(a)],[np.sin(a), np.cos(a)]]))
+        self.v[0:2] = self.v[0:2].dot(np.array([[np.cos(a), -np.sin(a)],
+                                                [np.sin(a), np.cos(a)]]))
 
     @property
     def x(self):
@@ -70,11 +72,17 @@ class Vector(object):
     def clone(self) -> Vector:
         return Vector(self.x, self.y)
 
+    def copy(self) -> Vector:
+        return self.clone()
+
     def negated(self) -> Vector:
         return Vector(-self.x, -self.y)
 
     def plus(self, other: Vector) -> Vector:
         return Vector(self.x + other.x, self.y + other.y)
+
+    def __add__(self, other: Vector) -> Vector:
+        return self.plus(other)
 
     def minus(self, other: Vector) -> Vector:
         return Vector(self.x - other.x, self.y - other.y)
@@ -85,6 +93,9 @@ class Vector(object):
     def divide_by(self, a: float) -> Vector:
         return Vector(self.x / a, self.y / a)
 
+    def __truediv__(self, a: float) -> Vector:
+        return self.divide_by(a)
+
     def dot(self, other: Vector) -> float:
         return self.x * other.x + self.y * other.y
 
@@ -93,6 +104,9 @@ class Vector(object):
 
     def length(self) -> float:
         return math.sqrt(self.dot(self))
+
+    def mag(self) -> float:
+        return self.length()
 
     def unit(self) -> Vector:
         return self.divide_by(self.length())

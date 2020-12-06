@@ -2,8 +2,8 @@
 # -*- coding: utf8 -*-
 
 import math
-import sys
 from .vector import Vector
+from gsnlib.constants import EPSILON
 
 
 def pointlinedist(p: Vector, p1: Vector, p2: Vector):
@@ -13,7 +13,7 @@ def pointlinedist(p: Vector, p1: Vector, p2: Vector):
     a = abs(dy * p.x - dx * p.y + p2.x * p1.y - p2.y * p1.x)
     b = math.sqrt(dy * dy + dx * dx)
 
-    if b < sys.float_info.epsilon:
+    if b < EPSILON:
         return p.dist(p1)
     return a / b
 

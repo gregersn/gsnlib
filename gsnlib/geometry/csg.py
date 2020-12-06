@@ -1,39 +1,52 @@
 from __future__ import annotations
+from gsnlib.constants import EPSILON
 
+import logging
 from ..vector import Vector
 from .node import Node
 from .segment import Segment
-from typing import List
+from typing import List, Union
+
+
+logger = logging.getLogger(__file__)
+
+PolygonList = List[List[Union[List[float], Vector]]]
 
 
 class CSG:
     def __init__(self, segments=List[Segment]):
-        print("csg-constructor")
+        logger.debug("csg-constructor")
         self.segments: List[Segment] = segments
 
     @classmethod
     def from_segments(cls, segments=List[Segment]):
-        print("csg-from-segments")
+        logger.debug("csg-from-segments")
         csg = CSG()
         csg.segments = segments
         return csg
 
     @classmethod
-    def from_polygons(cls, polygons: List[List[List[float]]]) -> CSG:
-        print("csg-from-polygons")
+    def from_polygons(cls,
+                      polygons: PolygonList) -> CSG:
+        logger.debug("csg-from-polygons")
         segments = []
         for i in range(len(polygons)):
             for j in range(len(polygons[i])):
                 k = (j + 1) % (len(polygons[i]))
-                segments.append(Segment([Vector(*polygons[i][j]),
-                                         Vector(*polygons[i][k])]))
+                a = polygons[i][j]
+                b = polygons[i][k]
+                if isinstance(a, Vector) and isinstance(b, Vector):
+                    segments.append(Segment([a, b]))
+                elif isinstance(a, list) and isinstance(b, list):
+                    segments.append(Segment([Vector(*a),
+                                             Vector(*b)]))
 
         return CSG(segments)
 
     @classmethod
     def from_vectors(cls, vectors: List[Vector]) -> CSG:
         """Assume nothing is repeated."""
-        print("csg-from-vectors")
+        logger.debug("csg-from-vectors")
         segments = []
         for i in range(len(vectors)):
             j = (i + 1) % len(vectors)
@@ -42,7 +55,7 @@ class CSG:
         return CSG(segments)
 
     def clone(self) -> CSG:
-        print("csg-clone")
+        logger.debug("csg-clone")
         csg = CSG()
         csg.segments = [p.clone() for p in self.segments]
         return csg
@@ -57,7 +70,7 @@ class CSG:
 
         def find_next(extremum):
             for i in range(len(_list)):
-                if _list[i].vertices[0].squared_length_to(extremum) < 1:
+                if _list[i].vertices[0].squared_length_to(extremum) < EPSILON:
                     result = _list[i].clone()
                     del _list[i]
                     return result
@@ -65,14 +78,15 @@ class CSG:
         current_index = 0
         while len(_list) > 0:
             polygons[current_index] = (polygons[current_index]
-                                       if current_index < len(polygons)
+                                       if current_index < len(polygons.keys())
                                        else [])
 
             if len(polygons[current_index]) == 0:
                 polygons[current_index].append(_list[0].vertices[0])
                 polygons[current_index].append(_list[0].vertices[1])
                 _list.pop(0)
-            next = find_next(polygons[current_index][len(polygons[current_index]) - 1])
+            extremum = polygons[current_index][len(polygons[current_index]) - 1]
+            next = find_next(extremum)
             if next:
                 polygons[current_index].append(next.vertices[1])
             else:

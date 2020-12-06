@@ -30,6 +30,7 @@ def test_clone():
     line = Line(Vector(0, 0), Vector(1, 0))
     line2 = line.clone()
 
+    assert line == line2
     assert line is not line2
 
 

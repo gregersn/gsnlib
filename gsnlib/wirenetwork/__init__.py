@@ -2,10 +2,9 @@ from dataclasses import dataclass
 from typing import List, Union
 from gsnlib.vector import Vector
 from .line import Line
-
 from typing import Tuple
 
-EPS = 1E-12
+from gsnlib.constants import EPSILON
 
 
 def line_intersect_1d(a, b, c, d):
@@ -14,7 +13,7 @@ def line_intersect_1d(a, b, c, d):
     if c > d:
         c, d = d, c
 
-    return max(a, c) <= min(b, d) + EPS
+    return max(a, c) <= min(b, d) + EPSILON
 
 
 def det(a, b, c, d):
@@ -22,7 +21,7 @@ def det(a, b, c, d):
 
 
 def betw(left, right, x):
-    return min(left, right) <= x + EPS and x <= max(left, right) + EPS
+    return min(left, right) <= x + EPSILON and x <= max(left, right) + EPSILON
 
 
 def line_intersection(a: Vector,
@@ -38,8 +37,8 @@ def line_intersection(a: Vector,
 
     zn = det(m.a, m.b, n.a, n.b)
 
-    if (abs(zn) < EPS):
-        if (abs(m.dist(c)) > EPS or abs(n.dist(a)) > EPS):
+    if (abs(zn) < EPSILON):
+        if (abs(m.dist(c)) > EPSILON or abs(n.dist(a)) > EPSILON):
             return None
 
         if(b < a):
@@ -238,7 +237,7 @@ class WireNetwork(object):
 
             px_sorted = sorted(px_i,
                                key=lambda x: self._vertices[x]
-                                                 .dist(self.vertices[p1_i if p1_i is not None else x]))
+                                                 .dist(self.vertices[p1_i if p1_i is not None else x]))  # noqa
 
             prev_x = p1_i
             for px in px_sorted:
