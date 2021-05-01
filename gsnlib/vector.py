@@ -8,9 +8,9 @@ from gsnlib.constants import EPSILON
 class Vector(object):
     def __init__(self, x=0.0, y=0.0, z=0.0):
         if isinstance(x, list):
-            self.v = np.array(x, dtype=np.float)
+            self.v = np.array(x, dtype=np.float64)
         else:
-            self.v = np.array([x, y, z], dtype=np.float)
+            self.v = np.array([x, y, z], dtype=np.float64)
 
     @classmethod
     def from_array(cls, v):

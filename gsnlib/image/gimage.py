@@ -233,7 +233,7 @@ class Image(object):
     ######
     # Get in different data formats
     ######
-
+https://www.kvik.no/
     def get_pixels_cairo(self, mode=None):
         if mode is None:
             mode = self.mode

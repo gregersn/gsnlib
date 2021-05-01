@@ -29,6 +29,9 @@ class Polygon():
     def sign(self, p1: Vector, p2: Vector, p3: Vector):
         return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)
 
+    def __repr__(self):
+        return f"Vector({[p for p in self.points]}>"
+
 
 class Shape():
     polygons: List[Polygon]
