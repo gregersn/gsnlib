@@ -1,7 +1,52 @@
-from gsnlib.geometry.triangulate import triangulate
+import math
+from gsnlib.geometry.triangulate import triangulate, calc_next, calc_prev
+from gsnlib.geometry.triangulate import check_ear, tri_angle
 import unittest
+from typing import List
 
 from gsnlib.geometry import Polygon, Vector
+
+TEST_POINTS = [
+    Vector(9.321044, 84.581885),
+    Vector(61.315102, 127.09138),
+    Vector(111.49942, 82.482205),
+    Vector(152.6412, 109.31529),
+    Vector(192.03188, 53.63302),
+    Vector(145.06825, 59.025564),
+    Vector(124.16278, 15.675397),
+    Vector(82.50756, 90.121654),
+    Vector(33.765241, 77.262587),
+    Vector(37.242697, 29.545994)
+]
+
+
+class TestHelpers(unittest.TestCase):
+    def test_calc_next(self):
+        self.assertEqual(calc_next(0, 3), 1)
+        self.assertEqual(calc_next(1, 3), 2)
+        self.assertEqual(calc_next(2, 3), 0)
+
+    def test_calc_prev(self):
+        self.assertEqual(calc_prev(0, 3), 2)
+        self.assertEqual(calc_prev(1, 3), 0)
+        self.assertEqual(calc_prev(2, 3), 1)
+
+    def test_tri_angle(self):
+        self.assertGreater(math.pi, tri_angle(
+            TEST_POINTS[4], TEST_POINTS[5], TEST_POINTS[2]))
+
+        self.assertLess(math.pi, tri_angle(
+            TEST_POINTS[2], TEST_POINTS[4], TEST_POINTS[1]
+        ))
+
+    def test_check_ear(self):
+        self.assertFalse(
+            check_ear(Polygon([TEST_POINTS[0], TEST_POINTS[1], TEST_POINTS[9]]), [
+                      TEST_POINTS[8]]))
+
+        self.assertTrue(
+            check_ear(Polygon([TEST_POINTS[0], TEST_POINTS[1], TEST_POINTS[9]]), [
+                      TEST_POINTS[7]]))
 
 
 class TestConvex(unittest.TestCase):
@@ -27,6 +72,39 @@ class TestConvex(unittest.TestCase):
 
         self.assertEqual(output[1].points, [Vector(
             0, 10), Vector(10, 10), Vector(10, 0)])
+
+    def test_misc(self):
+
+        TEST_CASES = [
+            {
+                'poly': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                'results': [
+                    [2, 3, 4],
+                    [2, 4, 5],
+                    [2, 5, 6],
+                    [2, 6, 7],
+                    [8, 9, 0],
+                    [8, 0, 1],
+                    [1, 2, 7],
+                    [1, 7, 8]
+                ]
+            }
+
+        ]
+
+        for case in TEST_CASES:
+            poly_indices: List[int] = case['poly']
+            result_polys = case['results']
+
+            poly = Polygon([TEST_POINTS[i] for i in poly_indices])
+
+            output = triangulate(poly)
+
+            for idx, p in enumerate(output):
+                result_points = [TEST_POINTS[i] for i in result_polys[idx]]
+
+                self.assertEqual(result_points, p.points,
+                                 f'Comparing poly {idx}: {result_polys[idx]}, and got {[TEST_POINTS.index(pp) for pp in p.points]}')
 
     def test_convex(self):
         poly = Polygon(

@@ -1,11 +1,14 @@
 from __future__ import annotations
 import math
 import numpy as np
+from typing import List
 
 from gsnlib.constants import EPSILON
 
 
-class Vector(object):
+class Vector:
+    v: List[float]
+
     def __init__(self, x=0.0, y=0.0, z=0.0):
         if isinstance(x, list):
             self.v = np.array(x, dtype=np.float64)
@@ -30,7 +33,7 @@ class Vector(object):
         t = self - other
         return math.sqrt(t.x * t.x + t.y * t.y)
 
-    def translate(self, x, y, z=0):
+    def translate(self, x: float, y: float, z: float = 0):
         self.x += x
         self.y += y
         self.z += z
@@ -40,27 +43,27 @@ class Vector(object):
                                                 [np.sin(a), np.cos(a)]]))
 
     @property
-    def x(self):
+    def x(self) -> float:
         return self.v[0]
 
     @x.setter
-    def x(self, x):
+    def x(self, x: float):
         self.v[0] = x
 
     @property
-    def y(self):
+    def y(self) -> float:
         return self.v[1]
 
     @y.setter
-    def y(self, y):
+    def y(self, y: float):
         self.v[1] = y
 
     @property
-    def z(self):
+    def z(self) -> float:
         return self.v[2]
 
     @z.setter
-    def z(self, z):
+    def z(self, z: float):
         self.v[2] = z
 
     def __repr__(self):
