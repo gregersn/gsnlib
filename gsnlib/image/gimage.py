@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 from PIL import Image as PILImage
 from PIL import ImageDraw as PILImageDraw
@@ -66,7 +66,7 @@ class Image(object):
         #pixels.shape = (-1, len(self.mode))
 
         return self.create(width, height, pixels, mode=self.mode)
-        #print(self.pixels.shape)
+        # print(self.pixels.shape)
 
     def save(self, filename):
         """
@@ -102,7 +102,7 @@ class Image(object):
     def add_alpha(self, alpha):
         # Add an image channel as alpha
 
-        #print(self.pixels.shape)
+        # print(self.pixels.shape)
         self.pixels[:, :, 3] = alpha.pixels
 
     def channel_copy(self, dch, sch):
@@ -119,10 +119,10 @@ class Image(object):
 
     def get_pil(self):
         #print("Get pil")
-        #return PILImage.fromarray(self.get_2d_data())
-        #print(type(self.pixels))
-        #print(self.pixels.shape)
-        #print(self.pixels.shape)
+        # return PILImage.fromarray(self.get_2d_data())
+        # print(type(self.pixels))
+        # print(self.pixels.shape)
+        # print(self.pixels.shape)
         return PILImage.fromarray(self.pixels)
 
     def get_float(self):
@@ -233,7 +233,6 @@ class Image(object):
     ######
     # Get in different data formats
     ######
-https://www.kvik.no/
     def get_pixels_cairo(self, mode=None):
         if mode is None:
             mode = self.mode
@@ -316,7 +315,8 @@ https://www.kvik.no/
         indices[1] -= center[0]
         indices[1] *= aspect_correction[1]
 
-        dist = (np.sqrt(np.power(indices[0], 2) + np.power(indices[1], 2)) - inner_radius) * pihalf_div_radius
+        dist = (np.sqrt(np.power(
+            indices[0], 2) + np.power(indices[1], 2)) - inner_radius) * pihalf_div_radius
         dist = np.clip(dist, 0, pihalf)
         falloff = np.cos(dist) * np.cos(dist)
         self.pixels[:, :, channel] *= falloff

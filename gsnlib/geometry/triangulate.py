@@ -1,4 +1,5 @@
 import math
+from gsnlib.structures import CircularSorted
 from typing import List, Union
 from . import Shape, Polygon, Vector
 
@@ -24,8 +25,9 @@ def check_ear(poly: Polygon, points: List[Vector]) -> bool:
 def tri_angle(point: Vector, left: Vector, right: Vector) -> float:
     a = left - point
     b = right - point
+    diff = math.atan2(b.y, b.x) - math.atan2(a.y, a.x)
 
-    return (math.atan2(a.y, a.x) - math.atan2(b.y, b.x)) % (math.pi * 2)
+    return diff % (math.pi * 2)
 
 
 def is_convex(point: Vector, left: Vector, right: Vector) -> bool:
@@ -41,7 +43,7 @@ def triangulate(input: Polygon) -> List[Polygon]:
     point_index: List[int] = list(range(len(input.points)))
 
     # Index to all points that currently are ears
-    ear_index: List[int] = []
+    ear_index = CircularSorted()
 
     # Points in an interior angle larger than PI
     reflex_index: List[int] = []
@@ -62,7 +64,7 @@ def triangulate(input: Polygon) -> List[Polygon]:
         vertex_prev = input.points[pos_prev]
 
         # Calculate internal angle of current point
-        r = tri_angle(vertex_current, vertex_next, vertex_prev)
+        r = tri_angle(vertex_current, vertex_prev, vertex_next)
 
         if r > math.pi:
             reflex_index.append(pos)
@@ -91,9 +93,10 @@ def triangulate(input: Polygon) -> List[Polygon]:
 
     """
     Do the actual clipping.
+    Remove each ear, one at a time.
     """
     while len(ear_index) > 0 and len(point_index) > 3:
-        ear_index = sorted(ear_index)
+        # ear_index = sorted(ear_index)
         # reflex = sorted(reflex)
         # convex = sorted(convex)
         ear: int = ear_index[0]
@@ -111,20 +114,26 @@ def triangulate(input: Polygon) -> List[Polygon]:
         ])
         polygons.append(polygon)
 
+        # BUG: There is some miff in calculating the indexes here!
+
         # Left indicies
         ear_prev_prev = point_index[calc_prev(ear_prev, len(point_index))]
-        ear_prev_next = point_index[calc_next(ear_prev, len(point_index))]
+        ear_prev_next = point_index[calc_next(ear_point, len(point_index))]
         indicies_left = [ear_prev, ear_prev_next, ear_prev_prev]
-        r = tri_angle(
+        left_r = tri_angle(
             input.points[ear_prev],
-            input.points[ear_prev_next],
-            input.points[ear_prev_prev])
+            input.points[ear_prev_prev],
+            input.points[ear_prev_next])
 
         # Right indicies
-        ear_next_prev = point_index[calc_prev(ear_next, len(point_index))]
-        ear_next_next = point_index[calc_next(ear_next, len(point_index))]
+        ear_next_prev = point_index[calc_prev(ear_point, len(point_index))]
+        ear_next_next = point_index[calc_next(
+            point_index.index(ear_next), len(point_index))]
+
+        # These end up wrong at some point...
+
         indicies_right = [ear_next, ear_next_prev, ear_next_next]
-        r = tri_angle(
+        right_r = tri_angle(
             input.points[ear_next],
             input.points[ear_next_prev],
             input.points[ear_next_next]
@@ -141,7 +150,7 @@ def triangulate(input: Polygon) -> List[Polygon]:
             reflex_index.remove(ear)
 
         # Test to the left
-        if r > math.pi:
+        if left_r > math.pi:
             if ear_prev in ear_index:
                 ear_index.remove(ear_prev)
 
@@ -171,7 +180,7 @@ def triangulate(input: Polygon) -> List[Polygon]:
 
         # Test to right
 
-        if r > math.pi:
+        if right_r > math.pi:
             if ear_next in ear_index:
                 ear_index.remove(ear_next)
 

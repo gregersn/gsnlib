@@ -32,12 +32,22 @@ class TestHelpers(unittest.TestCase):
         self.assertEqual(calc_prev(2, 3), 1)
 
     def test_tri_angle(self):
+        # Angles less than pi
         self.assertGreater(math.pi, tri_angle(
-            TEST_POINTS[4], TEST_POINTS[5], TEST_POINTS[2]))
+            TEST_POINTS[0], TEST_POINTS[9], TEST_POINTS[1]))
 
+        self.assertGreater(math.pi, tri_angle(
+            TEST_POINTS[4], TEST_POINTS[2], TEST_POINTS[5]))
+
+        self.assertGreater(math.pi, tri_angle(
+            TEST_POINTS[6], TEST_POINTS[5], TEST_POINTS[7]))
+
+        self.assertGreater(math.pi, tri_angle(
+            TEST_POINTS[6], TEST_POINTS[2], TEST_POINTS[7]))
+
+        # Angles bigger than pi
         self.assertLess(math.pi, tri_angle(
-            TEST_POINTS[2], TEST_POINTS[4], TEST_POINTS[1]
-        ))
+            TEST_POINTS[2], TEST_POINTS[1], TEST_POINTS[3]))
 
     def test_check_ear(self):
         self.assertFalse(
@@ -99,6 +109,7 @@ class TestConvex(unittest.TestCase):
             poly = Polygon([TEST_POINTS[i] for i in poly_indices])
 
             output = triangulate(poly)
+            self.assertEqual(len(output), len(result_polys))
 
             for idx, p in enumerate(output):
                 result_points = [TEST_POINTS[i] for i in result_polys[idx]]
@@ -106,40 +117,7 @@ class TestConvex(unittest.TestCase):
                 self.assertEqual(result_points, p.points,
                                  f'Comparing poly {idx}: {result_polys[idx]}, and got {[TEST_POINTS.index(pp) for pp in p.points]}')
 
-    def test_convex(self):
-        poly = Polygon(
-            [Vector(0, 0), Vector(10, 0), Vector(10, 10),
-             Vector(5, 2), Vector(0, 10)]
-        )
-        output = triangulate(poly)
-
-        self.assertEqual(len(output), 3)
-
-        self.assertEqual(output[0].points, [
-                         poly.points[2], poly.points[3], poly.points[1]])
-
-        self.assertEqual(output[1].points, [
-                         poly.points[1], poly.points[3], poly.points[0]])
-
-        self.assertEqual(output[2].points, [
-                         poly.points[0], poly.points[3], poly.points[4]])
-
     def test_complex(self):
-        """
-        poly = Polygon(
-            [Vector(0.62731574, 118.02858),
-             Vector(89.605676, 191.80027),
-             Vector(174.11161, 115.47713),
-             Vector(243.90512, 160.90282),
-             Vector(312.51194, 66.529942),
-             Vector(231.77231, 76.642446),
-             Vector(197.08373, 1.096719),
-             Vector(125, 128.80745),
-             Vector(42.161777, 107.42186),
-             Vector(48.132897, 24.908423)]
-        )
-        """
-
         poly = Polygon(
             [Vector(0.18961914, 0.06754579),
              Vector(19.043604, 15.154766),
