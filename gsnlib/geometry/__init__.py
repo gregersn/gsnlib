@@ -29,6 +29,23 @@ class Polygon():
     def sign(self, p1: Vector, p2: Vector, p3: Vector):
         return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)
 
+    def area(self):
+        prev_point = self.points[-1]
+        area = 0
+        for point in self.points:
+            area += prev_point.x * point.y - point.x * prev_point.y
+            prev_point = point
+
+        return area / 2.0
+
+    def winding(self):
+        return -1 if self.area() < 0 else 1
+
+    def segments(self):
+        for idx, cur in enumerate(self.points):
+            next = self.points[(idx + 1) % len(self.points)]
+            yield Segment([cur, next])
+
     def __repr__(self):
         return f"Vector({[p for p in self.points]}>"
 
@@ -38,3 +55,37 @@ class Shape():
 
     def __init__(self, polygons: List[Polygon]):
         self.polygons = polygons
+
+
+def ray_segment_intersection(ray: Line, segment: Segment):
+    def cross(a: Vector, b: Vector) -> float:
+        return a.x * b.y - a.y * b.x
+
+    p = ray.origin
+    r = ray.direction
+
+    q = segment.start
+    s = segment.end - q
+
+    rxs = cross(r, s)
+
+    qsubp = q - p
+
+    qsubpXr = cross(qsubp, r)
+    qsubpXs = cross(qsubp, s)
+
+    if rxs == 0 and qsubpXr == 0:
+        # TODO: Colinear, find out if they are overlapping
+        # or not
+        return None
+
+    if rxs == 0 and qsubpXr != 0:
+        # Lines are parallell and non-intersecting
+        return None
+
+    if rxs != 0:
+        t = qsubpXs / rxs
+        u = qsubpXr / rxs
+
+        if t >= 0 and u >= 0 and u <= 1:
+            return p + r.times(t)

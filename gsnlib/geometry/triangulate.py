@@ -1,7 +1,7 @@
 import math
 from gsnlib.structures import CircularSorted
 from typing import List, Union
-from . import Shape, Polygon, Vector
+from . import Shape, Polygon, Vector, ray_segment_intersection, Line
 
 
 def calc_next(cur: int, count: int) -> int:
@@ -217,3 +217,57 @@ def triangulate(input: Polygon) -> List[Polygon]:
         polygons.append(polygon)
 
     return polygons
+
+
+def collapse(shape: Shape) -> Polygon:
+    ##
+    # Assumptions
+    # The first polygon is the main shape
+    # All other polygons are of the opposite winding
+    # All other polygons are completely inside the first
+
+    # determine winding
+    shell = shape.polygons[0]
+    main_winding = shell.winding()
+
+    for hole_poly in shape.polygons[1:]:
+        assert hole_poly.winding() != main_winding
+
+        # Find maximum x of inner poly
+        max_idx = 0
+        max_point = None
+        for idx, point in enumerate(hole_poly.points):
+            if idx == 0:
+                max_point = point
+                continue
+
+            if isinstance(max_point, Vector) and point.x > max_point.x:
+                max_point = point
+                max_idx = idx
+
+        if max_point is None:
+            raise TypeError
+
+        closest_intersection = None
+        closest_segment = None
+        print(f"Found max point in hole at {max_point}")
+        for segment in shell.segments():
+            intersection = ray_segment_intersection(
+                Line(max_point, Vector(1, 0)), segment)
+
+            if isinstance(intersection, Vector):
+                print(
+                    f"Checking intersection of segment {segment} at {intersection}")
+                if isinstance(closest_intersection, Vector):
+                    if ((intersection - max_point).length()
+                            < (closest_intersection - max_point).length()):
+                        closest_intersection = intersection
+                        closest_segment = segment
+                else:
+                    closest_intersection = intersection
+                    closest_segment = segment
+
+        print(f"Closest intersection: {closest_intersection}")
+        print(f"Closest segment: {closest_segment}")
+
+    return Polygon([])

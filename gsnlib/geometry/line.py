@@ -105,7 +105,7 @@ class Line():
 
             if ti == RIGHT and tj == LEFT:
                 t = (self.normal.dot(self.origin.minus(vi))) \
-                                    / self.normal.dot(vj.minus(vi))
+                    / self.normal.dot(vj.minus(vi))
                 v = vi.lerp(vj, t)
                 new_right.append(vi)
                 new_right.append(v)
@@ -114,7 +114,7 @@ class Line():
 
             if ti == LEFT and tj == RIGHT:
                 t = (self.normal.dot(self.origin.minus(vi))) \
-                                    / self.normal.dot(vj.minus(vi))
+                    / self.normal.dot(vj.minus(vi))
                 v = vi.lerp(vj, t)
                 new_left.append(vi)
                 new_left.append(v)

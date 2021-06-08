@@ -111,6 +111,9 @@ class Vector:
     def mag(self) -> float:
         return self.length()
 
+    def magsq(self) -> float:
+        return self.dot(self)
+
     def unit(self) -> Vector:
         return self.divide_by(self.length())
 
@@ -122,3 +125,11 @@ class Vector:
 
     def __eq__(self, o: Vector) -> bool:
         return self.x == o.x and self.y == o.y
+
+    def cross(self, other: Vector) -> Vector:
+        return Vector(self.y * other.z - self.z * other.y,
+                      self.z * other.x - self.x * other.z,
+                      self.x * other.y - self.y * other.x)
+
+    def normalize(self) -> Vector:
+        return self / self.length()

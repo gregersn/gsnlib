@@ -2,6 +2,7 @@ from typing import Tuple
 import unittest
 from gsnlib.wirenetwork import line_intersection
 from gsnlib.vector import Vector
+from gsnlib.geometry import Segment, Line, ray_segment_intersection
 
 
 class TestSegmentIntersection(unittest.TestCase):
@@ -42,3 +43,44 @@ class TestSegmentIntersection(unittest.TestCase):
         self.assertIsInstance(i, Tuple)
         if isinstance(i, Tuple):
             self.assertEqual(2, len(i))
+
+
+class TestRaySegmentIntersection(unittest.TestCase):
+    def test_intersection(self):
+        segment = Segment([Vector(5, 0), Vector(5, 10)])
+        ray = Line(origin=Vector(0, 5), direction=Vector(1, 0))
+
+        result = ray_segment_intersection(ray, segment)
+        self.assertIsNotNone(result)
+
+        if result is not None:
+            self.assertAlmostEqual(result.x, 5)
+            self.assertAlmostEqual(result.y, 5)
+
+        segment = Segment([Vector(5, 0), Vector(5, 10)])
+        ray = Line(origin=Vector(10, 0), direction=Vector(0, 1))
+
+        result = ray_segment_intersection(ray, segment)
+        self.assertIsNone(result)
+
+        segment = Segment([Vector(0, 0), Vector(10, 10)])
+        ray = Line(origin=Vector(0, 5), direction=Vector(1, 0))
+
+        result = ray_segment_intersection(ray, segment)
+        self.assertIsNotNone(result)
+
+        if result is not None:
+            self.assertAlmostEqual(result.x, 5)
+            self.assertAlmostEqual(result.y, 5)
+
+    def test_offset_intersection(self):
+        segment = Segment([Vector(107, 148),
+                          Vector(82, 59)])
+        ray = Line(origin=Vector(72, 104), direction=Vector(1, 0))
+
+        result = ray_segment_intersection(ray, segment)
+        self.assertIsNotNone(result)
+
+        if result is not None:
+            self.assertAlmostEqual(result.x, 94.64, 2)
+            self.assertAlmostEqual(result.y, 104)

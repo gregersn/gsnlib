@@ -1,7 +1,10 @@
+from typing import List
 from collections import UserList
 
 
 class CircularSorted(UserList):
+    data: List[int]
+
     def append(self, item: int):
         if len(self.data) < 1:
             self.data.append(item)

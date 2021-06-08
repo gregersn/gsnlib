@@ -1,10 +1,10 @@
 import math
 from gsnlib.geometry.triangulate import triangulate, calc_next, calc_prev
-from gsnlib.geometry.triangulate import check_ear, tri_angle
+from gsnlib.geometry.triangulate import check_ear, tri_angle, collapse
 import unittest
 from typing import List
 
-from gsnlib.geometry import Polygon, Vector
+from gsnlib.geometry import Polygon, Vector, Shape
 
 TEST_POINTS = [
     Vector(9.321044, 84.581885),
@@ -17,6 +17,32 @@ TEST_POINTS = [
     Vector(82.50756, 90.121654),
     Vector(33.765241, 77.262587),
     Vector(37.242697, 29.545994)
+]
+
+TEST_HOLY_1 = [
+    [
+        Vector(0.79793948, 167.8943),
+        Vector(109.7863, 214.51796),
+        Vector(154.7471, 153.16029),
+        Vector(224.65895, 153.51845),
+        Vector(155.43403, 118.22405),
+        Vector(131.59902, 64.199269),
+        Vector(93.693616, 63.114824),
+        Vector(109.28107, 129.03213),
+        Vector(114.16385, 81.13007),
+        Vector(129.56177, 84.005276),
+        Vector(146.53286, 134.13107),
+        Vector(107.56652, 148.34324),
+        Vector(82.501517, 59.464289),
+        Vector(121.18695, 36.913272),
+        Vector(67.064749, 53.412217),
+    ],
+    [
+
+        Vector(32.659875, 143.47276),
+        Vector(72.500926, 104.71899),
+        Vector(64.307166, 177.77096),
+    ]
 ]
 
 
@@ -162,3 +188,12 @@ class TestConvex(unittest.TestCase):
         """
 
         self.assertEqual(len(output), 8)
+
+
+class TestHoled(unittest.TestCase):
+    def test_single_hole(self):
+        shape = Shape([Polygon(p) for p in TEST_HOLY_1])
+
+        output = collapse(shape)
+
+        assert False
