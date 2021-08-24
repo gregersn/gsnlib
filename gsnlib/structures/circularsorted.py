@@ -2,7 +2,7 @@ from typing import List
 from collections import UserList
 
 
-class CircularSorted(UserList):
+class CircularSorted(UserList[int]):
     data: List[int]
 
     def append(self, item: int):
@@ -12,7 +12,8 @@ class CircularSorted(UserList):
 
         if item < self.data[0]:
             i = len(self.data) - 1
-            while i > 0 and self.data[i] > item and self.data[i] < self.data[0]:
+            while (i > 0 and self.data[i] > item
+                   and self.data[i] < self.data[0]):
                 i -= 1
             self.data.insert(i + 1, item)
 

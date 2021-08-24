@@ -6,10 +6,10 @@ class DoubleLinkedNode():
     next: Union['DoubleLinkedNode', None]
     data: Any
 
-    def __init__(self, data):
+    def __init__(self, data: Any):
         self.data = data
 
-    def add(self, data) -> 'DoubleLinkedNode':
+    def add(self, data: Any) -> 'DoubleLinkedNode':
         n = self.__class__(data)
         self.next = n
         n.prev = self

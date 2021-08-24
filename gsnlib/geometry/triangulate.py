@@ -1,6 +1,6 @@
 import math
 from gsnlib.structures import CircularSorted
-from typing import List, Union
+from typing import List
 from . import Shape, Polygon, Vector, ray_segment_intersection, Line
 
 
@@ -96,16 +96,13 @@ def triangulate(input: Polygon) -> List[Polygon]:
     Remove each ear, one at a time.
     """
     while len(ear_index) > 0 and len(point_index) > 3:
-        # ear_index = sorted(ear_index)
-        # reflex = sorted(reflex)
-        # convex = sorted(convex)
         ear: int = ear_index[0]
         ear_point = point_index.index(ear)
 
         ear_prev: int = point_index[calc_prev(ear_point, len(point_index))]
         ear_next: int = point_index[calc_next(ear_point, len(point_index))]
 
-        indicies_ear = (ear_prev, ear, ear_next)
+        # indicies_ear = (ear_prev, ear, ear_next)
 
         polygon: Polygon = Polygon([
             input.points[ear_prev],
@@ -119,7 +116,7 @@ def triangulate(input: Polygon) -> List[Polygon]:
         # Left indicies
         ear_prev_prev = point_index[calc_prev(ear_prev, len(point_index))]
         ear_prev_next = point_index[calc_next(ear_point, len(point_index))]
-        indicies_left = [ear_prev, ear_prev_next, ear_prev_prev]
+        # indicies_left = [ear_prev, ear_prev_next, ear_prev_prev]
         left_r = tri_angle(
             input.points[ear_prev],
             input.points[ear_prev_prev],
@@ -132,7 +129,7 @@ def triangulate(input: Polygon) -> List[Polygon]:
 
         # These end up wrong at some point...
 
-        indicies_right = [ear_next, ear_next_prev, ear_next_next]
+        # indicies_right = [ear_next, ear_next_prev, ear_next_next]
         right_r = tri_angle(
             input.points[ear_next],
             input.points[ear_next_prev],
@@ -234,7 +231,6 @@ def collapse(shape: Shape) -> Polygon:
         assert hole_poly.winding() != main_winding
 
         # Find maximum x of inner poly
-        max_idx = 0
         max_point = None
         for idx, point in enumerate(hole_poly.points):
             if idx == 0:
@@ -243,7 +239,6 @@ def collapse(shape: Shape) -> Polygon:
 
             if isinstance(max_point, Vector) and point.x > max_point.x:
                 max_point = point
-                max_idx = idx
 
         if max_point is None:
             raise TypeError
@@ -257,7 +252,8 @@ def collapse(shape: Shape) -> Polygon:
 
             if isinstance(intersection, Vector):
                 print(
-                    f"Checking intersection of segment {segment} at {intersection}")
+                    "Checking intersection of segment " +
+                    f"{segment} at {intersection}")
                 if isinstance(closest_intersection, Vector):
                     if ((intersection - max_point).length()
                             < (closest_intersection - max_point).length()):
@@ -269,5 +265,11 @@ def collapse(shape: Shape) -> Polygon:
 
         print(f"Closest intersection: {closest_intersection}")
         print(f"Closest segment: {closest_segment}")
+        if closest_segment is not None:
+            mutual_point = (closest_segment.start
+                            if closest_segment.start.x > closest_segment.end.x
+                            else closest_segment.end)
+
+            print(mutual_point)
 
     return Polygon([])
