@@ -1,22 +1,23 @@
+from typing import List
 import numpy as np
 
 
 class Coordinates(object):
     def __init__(self):
         self.matrix = np.identity(3)
-        self.stack = []
+        self.stack: List[np.ndarray] = []
 
     def reset(self):
         self.matrix = np.identity(3)
         self.stack = []
 
-    def translate(self, x, y):
+    def translate(self, x: float, y: float):
         m = np.identity(3)
         m[0, 2] = x
         m[1, 2] = y
         self.matrix = self.matrix.dot(m)
 
-    def rotate(self, v):
+    def rotate(self, v: float):
         r = np.identity(3)
         r[0, 0] = np.cos(v)
         r[0, 1] = -np.sin(v)
@@ -24,7 +25,7 @@ class Coordinates(object):
         r[1, 1] = np.cos(v)
         self.matrix = self.matrix.dot(r)
 
-    def scale(self, v):
+    def scale(self, v: float):
         s = np.identity(3)
         s[0, 0] = v
         s[1, 1] = v
@@ -46,9 +47,9 @@ class Coordinates(object):
         return np.append(self.pos, 0)
 
     @property
-    def x(self):
+    def x(self) -> float:
         return self.pos[0]
 
     @property
-    def y(self):
+    def y(self) -> float:
         return self.pos[1]

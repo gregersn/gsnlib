@@ -1,20 +1,15 @@
 #!/usr/bin/python
-#-*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
+# -*- coding: utf-8 -*-
 
 import hashlib
 
-from os import listdir
-from os.path import isfile, join
+from pathlib import Path
+from typing import Dict, List, Literal
 
 
-def file_hash(filename, chunk_size=2 ** 8):
+def file_hash(filename: Path, chunk_size: int = 2 ** 8):
     h = hashlib.md5()
-    with open(filename) as f:
+    with open(filename, 'rb') as f:
         while True:
             data = f.read(chunk_size)
             if not data:
@@ -24,19 +19,19 @@ def file_hash(filename, chunk_size=2 ** 8):
     return h.hexdigest()
 
 
-def find_duplicates(folder):
+def find_duplicates(folder: Path):
     """
     Returns a list of tuples of duplicate files in a folder, based on
     file hash
     """
 
-    dupes = []
-    hashes = {}
+    dupes: List[List[Path]] = []
+    hashes: Dict[str, List[Path]] = {}
 
-    onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
+    onlyfiles = [f for f in folder.iterdir() if (folder / f).is_file()]
 
     for f in onlyfiles:
-        h = file_hash(join(folder, f), chunk_size=256)
+        h = file_hash(folder / f, chunk_size=256)
         if h in hashes:
             hashes[h].append(f)
         else:
@@ -49,7 +44,10 @@ def find_duplicates(folder):
     return dupes
 
 
-def offsetter(aw, bw, offset, mode='center'):
+def offsetter(aw: int,
+              bw: int,
+              offset: int,
+              mode: Literal['center', 'corner'] = 'center'):
     """
         Calculates a new "width" two room a and b, when b is offset
         Used to calculate each dimension when two images are

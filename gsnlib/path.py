@@ -2,6 +2,7 @@
 # -*- coding: utf8 -*-
 
 import math
+from typing import List
 from .vector import Vector
 from gsnlib.constants import EPSILON
 
@@ -18,13 +19,13 @@ def pointlinedist(p: Vector, p1: Vector, p2: Vector):
     return a / b
 
 
-def reduce_shapes(shapes, tolerance):
+def reduce_shapes(shapes: List[List[List[Vector]]], tolerance: float):
     out = [[reduce_points(part, tolerance) for part in shape]
            for shape in shapes]
     return out
 
 
-def reduce_points(points, tolerance):
+def reduce_points(points: List[Vector], tolerance: float) -> List[Vector]:
     dmax = 0
     index = 0
     end = len(points) - 1

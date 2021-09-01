@@ -1,10 +1,14 @@
 from .line import Line
 from ..vector import Vector
-from typing import List
+from typing import List, Optional, Union
 
 
 class Segment:
-    def __init__(self, vertices: List[Vector], shared=None):
+    shared: Union[List[Vector], None]
+
+    def __init__(self,
+                 vertices: List[Vector],
+                 shared: Optional[List[Vector]] = None):
         self.vertices = vertices
         self.shared = shared
         self.line = Line.from_points(vertices[0], vertices[1])
@@ -20,13 +24,15 @@ class Segment:
         self.vertices.reverse()
         self.line.flip()
 
-    def __eq__(self, o) -> bool:
+    def __eq__(self, o: 'Segment') -> bool:
         if len(self.vertices) != len(o.vertices):
             return False
 
-        if self.shared is not None or o.shared is not None:
+        if self.shared is not None and o.shared is not None:
             if len(self.shared) != len(o.shared):
                 return False
+        elif self.shared is not None != o.shared is not None:
+            return False
 
         if self.line != o.line:
             return False
@@ -35,7 +41,7 @@ class Segment:
             if self.vertices[i] != o.vertices[i]:
                 return False
 
-        if self.shared is not None:
+        if self.shared is not None and o.shared is not None:
             for i in range(len(self.shared)):
                 if self.shared[i] != o.shared[i]:
                     return False
