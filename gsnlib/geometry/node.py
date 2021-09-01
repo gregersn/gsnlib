@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import logging
 from typing import List, Union
 from gsnlib.geometry.segment import Segment
@@ -8,7 +6,7 @@ from gsnlib.geometry.line import Line
 logger = logging.getLogger(__file__)
 
 
-class Node():
+class Node:
     def __init__(self, segments: List[Segment] = []):
         self.line: Union[Line, None] = None
         self.right = None
@@ -20,7 +18,7 @@ class Node():
     def __repr__(self) -> str:
         return f"<Node({self.segments})>"
 
-    def __eq__(self, o) -> bool:
+    def __eq__(self, o: 'Node') -> bool:
         equal = True
 
         equal = o is not None
@@ -78,7 +76,7 @@ class Node():
 
         return right + left
 
-    def clip_to(self, bsp: Node):
+    def clip_to(self, bsp: 'Node'):
         self.segments = bsp.clip_segments(self.segments)
         if self.right:
             self.right.clip_to(bsp)
@@ -95,7 +93,7 @@ class Node():
 
         return segments
 
-    def build(self, segments: List[Segment], level=1):
+    def build(self, segments: List[Segment], level: int = 1):
         if level > 50:
             raise RecursionError
         logger.debug("node-build")

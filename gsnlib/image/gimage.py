@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 from PIL import Image as PILImage
 from PIL import ImageDraw as PILImageDraw
@@ -8,8 +8,12 @@ import numpy as np
 import scipy.ndimage
 
 
-class Image(object):
-    def __init__(self, width, height, data, mode='RGBA'):
+class Image:
+    width: int
+    height: int
+    pixels: np.array
+
+    def __init__(self, width: int, height: int, data: np.array, mode: str = 'RGBA'):
         self.width = width
         self.height = height
         self.pixels = data
@@ -24,7 +28,7 @@ class Image(object):
                 self.pixels = np.zeros((self.height, self.width),
                                        dtype=np.uint8)
 
-    def resize(self, w, h, glitch=False):
+    def resize(self, w: int, h: int, glitch: bool = False):
         sx = None
         sy = None
 
@@ -66,9 +70,9 @@ class Image(object):
         #pixels.shape = (-1, len(self.mode))
 
         return self.create(width, height, pixels, mode=self.mode)
-        #print(self.pixels.shape)
+        # print(self.pixels.shape)
 
-    def save(self, filename):
+    def save(self, filename: str):
         """
         if len(self.mode) > 1:
             data = self.pixels.reshape(self.height, self.width, len(self.mode))
@@ -102,10 +106,10 @@ class Image(object):
     def add_alpha(self, alpha):
         # Add an image channel as alpha
 
-        #print(self.pixels.shape)
+        # print(self.pixels.shape)
         self.pixels[:, :, 3] = alpha.pixels
 
-    def channel_copy(self, dch, sch):
+    def channel_copy(self, dch: int, sch: int):
         # Copies one channel into another
         self.pixels[:, :, dch] = self.pixels[:, :, sch]
 
@@ -119,10 +123,10 @@ class Image(object):
 
     def get_pil(self):
         #print("Get pil")
-        #return PILImage.fromarray(self.get_2d_data())
-        #print(type(self.pixels))
-        #print(self.pixels.shape)
-        #print(self.pixels.shape)
+        # return PILImage.fromarray(self.get_2d_data())
+        # print(type(self.pixels))
+        # print(self.pixels.shape)
+        # print(self.pixels.shape)
         return PILImage.fromarray(self.pixels)
 
     def get_float(self):
@@ -169,7 +173,7 @@ class Image(object):
         return out
 
     @classmethod
-    def open(cls, filename, mode='RGBA', premult=False):
+    def open(cls, filename: str, mode: str = 'RGBA', premult: bool = False):
         try:
             img = PILImage.open(filename)
             return cls.from_pil(img, mode, premult)
@@ -197,7 +201,7 @@ class Image(object):
         self.width = x1 - x0
         self.height = y1 - y0
 
-    def copy(self, x0, y0, x1, y1):
+    def copy(self, x0: int, y0: int, x1: int, y1: int):
         data = self.pixels[y0:y1, x0:x1]
         return self.fromarray(data)
 
@@ -213,11 +217,11 @@ class Image(object):
 
         t = np.where(c > 0)
 
-        minx = t[1].min()
-        maxx = t[1].max()
+        minx: float = t[1].min()
+        maxx: float = t[1].max()
 
-        miny = t[0].min()
-        maxy = t[0].max()
+        miny: float = t[0].min()
+        maxy: float = t[0].max()
 
         if len(self.mode) > 1:
             data = data[miny:maxy, minx:maxx, :]
@@ -316,12 +320,13 @@ class Image(object):
         indices[1] -= center[0]
         indices[1] *= aspect_correction[1]
 
-        dist = (np.sqrt(np.power(indices[0], 2) + np.power(indices[1], 2)) - inner_radius) * pihalf_div_radius
+        dist = (np.sqrt(np.power(
+            indices[0], 2) + np.power(indices[1], 2)) - inner_radius) * pihalf_div_radius
         dist = np.clip(dist, 0, pihalf)
         falloff = np.cos(dist) * np.cos(dist)
         self.pixels[:, :, channel] *= falloff
 
-    def vignette2(self, amount=0.1, sigma=5):
+    def vignette2(self, amount: float = 0.1, sigma: int = 5):
         edge = np.ceil(min(self.width, self.height) * 0.1).astype(int)
 
         alpha = np.ones((self.height, self.width)).astype(float)

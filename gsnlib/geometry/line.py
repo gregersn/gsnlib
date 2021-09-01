@@ -1,9 +1,8 @@
-from __future__ import annotations
 # from gsnlib.constants import EPSILON
 import logging
 
 from ..vector import Vector
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Literal
 if TYPE_CHECKING:
     from .segment import Segment
 
@@ -15,13 +14,13 @@ from gsnlib.constants import EPSILON
 logger = logging.getLogger(__file__)
 
 
-class Line():
+class Line:
     def __init__(self, origin: Vector, direction: Vector):
         self.origin = origin
         self.direction = direction
         self.normal = Vector(self.direction.y, -self.direction.x)
 
-    def __eq__(self, o: Line) -> bool:
+    def __eq__(self, o: 'Line') -> bool:
         return (self.origin == o.origin
                 and self.direction == o.direction
                 and self.normal == o.normal)
@@ -30,11 +29,11 @@ class Line():
         return f"<Line({self.origin}, {self.direction}>"
 
     @classmethod
-    def from_points(cls, a: Vector, b: Vector) -> Line:
+    def from_points(cls, a: Vector, b: Vector) -> 'Line':
         dir = b.minus(a).unit()
         return Line(a, dir)
 
-    def clone(self) -> Line:
+    def clone(self) -> 'Line':
         logger.debug("line-clone")
         return Line(self.origin.clone(), self.direction.clone())
 
@@ -42,11 +41,11 @@ class Line():
         self.direction = self.direction.negated()
         self.normal = self.normal.negated()
 
-    def split_segment(self, segment: Segment,
-                      colinear_right: List[Segment],
-                      colinear_left: List[Segment],
-                      right: List[Segment],
-                      left: List[Segment]):
+    def split_segment(self, segment: 'Segment',
+                      colinear_right: List['Segment'],
+                      colinear_left: List['Segment'],
+                      right: List['Segment'],
+                      left: List['Segment']):
         logger.debug("line-split_segment")
         COLINEAR = 0
         RIGHT = 1
@@ -54,8 +53,8 @@ class Line():
         SPANNING = 3
 
         segment_type = 0
-        types = []
-        t = None
+        types: List[int] = []
+        t: float = 0.0
         for i in range(len(segment.vertices)):
             t = self.normal.dot(segment.vertices[i].minus(self.origin))
             type = COLINEAR
@@ -86,8 +85,8 @@ class Line():
             logger.debug("LEFT")
             left.append(segment)
         elif segment_type == SPANNING:
-            new_right = []
-            new_left = []
+            new_right: List[Vector] = []
+            new_left: List[Vector] = []
 
             ti = types[0]
             tj = types[1]
@@ -105,7 +104,7 @@ class Line():
 
             if ti == RIGHT and tj == LEFT:
                 t = (self.normal.dot(self.origin.minus(vi))) \
-                                    / self.normal.dot(vj.minus(vi))
+                    / self.normal.dot(vj.minus(vi))
                 v = vi.lerp(vj, t)
                 new_right.append(vi)
                 new_right.append(v)
@@ -114,7 +113,7 @@ class Line():
 
             if ti == LEFT and tj == RIGHT:
                 t = (self.normal.dot(self.origin.minus(vi))) \
-                                    / self.normal.dot(vj.minus(vi))
+                    / self.normal.dot(vj.minus(vi))
                 v = vi.lerp(vj, t)
                 new_left.append(vi)
                 new_left.append(v)

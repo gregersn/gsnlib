@@ -1,23 +1,22 @@
-#!/usr/bin/python
-# -*- coding: utf8 -*-
+from typing import Dict, List
 
 
-class lsystem(object):
-    rules = {}
-    variables = []
+class lsystem:
+    rules: Dict[str, str] = {}
+    variables: List[str] = []
     state = None
     axiom = ''
 
     def __init__(self):
         pass
 
-    def add_variable(self, var):
+    def add_variable(self, var: str):
         self.variables.append(var)
 
-    def add_rule(self, rule, result):
+    def add_rule(self, rule: str, result: str):
         self.rules[rule] = result
 
-    def add_constant(self, rule):
+    def add_constant(self, rule: str):
         self.rules[rule] = rule
 
     def get_state(self):
@@ -26,10 +25,10 @@ class lsystem(object):
 
         return self.state
 
-    def update(self, iterations=1):
-        for i in range(iterations):
+    def update(self, iterations: int = 1):
+        for _ in range(iterations):
             state = self.get_state()
-            new_state = []
+            new_state: List[str] = []
 
             for s_pos in range(len(state)):
                 s = state[s_pos]

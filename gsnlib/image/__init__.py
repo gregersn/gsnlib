@@ -1,30 +1,27 @@
 #!/usr/bin/python
-#-*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
+# -*- coding: utf-8 -*-
 
 import os
 import json
-#import math
-#import time
-
+from pathlib import Path
+from typing import Any, Dict, Literal, Optional, Tuple, Union
 
 from PIL import Image
 from PIL import ImageDraw
 import numpy as np
 from scipy import ndimage
 
-#from gsn.np_color_conversion import rgb_to_hls
-from ..utils import file_hash
-from ..utils import offsetter
+from ..utils import file_hash, offsetter
 
 
 class GSNImage(object):
-    def __init__(self, filename=None, checksum=False):
-        self.info = {}
+    filename: Union[Path, None]
+    img: Union[Image.Image, None]
+
+    def __init__(self,
+                 filename: Optional[Path] = None,
+                 checksum: bool = False):
+        self.info: Dict[str, Any] = {}
         self.img = None
         self.filename = None
         self.pixels = None
@@ -36,14 +33,15 @@ class GSNImage(object):
             if checksum is True:
                 self.info['hash'] = file_hash(filename)
 
-    def open(self, filename=None, checksum=True):  # , infofile=None):
+    # , infofile=None):
+    def open(self, filename: Optional[Path] = None, checksum: bool = True):
         if filename is not None:
             self.filename = self.info['filename'] = filename
 
-        #if infofile is not None:
+        # if infofile is not None:
         #    self.infofile = infofile
 
-        if not os.path.isfile(self.filename):
+        if self.filename is None or not self.filename.is_file():
             raise IOError
 
         if checksum:
@@ -56,28 +54,34 @@ class GSNImage(object):
 
         self.img.load()
 
-        #if infofile is not None:
+        # if infofile is not None:
         #    self.open_info(infofile)
 
-    def save(self, filename):
+    def save(self, filename: Path):
         self.filename = filename
-        self.img.save(self.filename)
+        if self.img is not None:
+            self.img.save(self.filename)
 
-    def get_thumb(self, size, resample=0, mode='RGB'):
+    def get_thumb(self,
+                  size: Tuple[int, int],
+                  resample: Literal[0, 1, 2, 3, 4, 5] = 0,
+                  mode: str = 'RGB'):
         """
             Returns a PIL Image copy of this image
         """
-        if self.img is None:
+        out = None
+        if self.img is None and self.filename is not None:
             try:
                 out = Image.open(self.filename)
             except IOError:
                 raise IOError
-        else:
+        elif self.img is not None:
             out = self.img.copy()
 
-        if out.mode != mode:
-            out = out.convert(mode)
-        out.thumbnail(size, resample=resample)
+        if out is not None:
+            if out.mode != mode:
+                out = out.convert(mode)
+            out.thumbnail(size, resample=resample)
         return out
 
     def get_data(self):
@@ -104,7 +108,7 @@ class GSNImage(object):
         return newimg
 
     @staticmethod
-    def save_from_array(array, filename):
+    def save_from_array(array, filename: Path):
         """
             SAves an image based on a numpy array
         """
@@ -115,18 +119,24 @@ class GSNImage(object):
         Manipulation functions
     """
 
-    def add_alpha(self, value=255, mask=None):
+    def add_alpha(self,
+                  value: Union[int, Image.Image] = 255,
+                  mask: Optional['GSNImage'] = None):
         """
             Adds an alpha channel to the image,
             and sets it to the value specified.
             Function modifies object
         """
-        if mask is not None:
+        if mask is not None and mask.img is not None:
             value = mask.img
 
-        self.img.putalpha(value)
+        if self.img:
+            self.img.putalpha(value)
 
-    def rotate(self, angle, offset=None, center=None):
+    def rotate(self,
+               angle: float,
+               offset: Optional[Tuple[int, int]] = None,
+               center: Optional[Tuple[int, int]] = None):
         """
             Rotate image <angle> degrees
         """
@@ -162,7 +172,10 @@ class GSNImage(object):
             d = dd
         return self.fromarray(ndimage.interpolation.rotate(d, angle))
 
-    def add(self, data, offset=(0, 0), mode='center'):
+    def add(self,
+            data,
+            offset: Tuple[int, int] = (0, 0),
+            mode: str = 'center'):
         """
             Add image <data> to this image,
             offset at <offset>
@@ -192,7 +205,7 @@ class GSNImage(object):
         out[datayo:data.shape[0] + datayo, dataxo:data.shape[1] + dataxo] = t
         return self.fromarray(out)
 
-    def scale(self, w, h):
+    def scale(self, w: int, h: int):
         """
             Scales image to a certain size
         """
@@ -200,7 +213,7 @@ class GSNImage(object):
             (w, h), Image.ANTIALIAS
         )))
 
-    def scale_perc(self, perc):
+    def scale_perc(self, perc: float):
         """
             Scales an image by a certain percentage
             Keeps aspect ratio
@@ -214,19 +227,19 @@ class GSNImage(object):
         arr = np.array(pil_img)
         return GSNImage.fromarray(arr)
 
-    def fit_in(self, w, h):
+    def fit_in(self, w: int, h: int):
         return self.scale_perc(
             min(float(w) / float(self.width),
                 float(h) / float(self.height)) * 100.0
         )
 
-    def fill_in(self, w, h):
+    def fill_in(self, w: int, h: int):
         return self.scale_perc(
             max(float(w) / float(self.width),
                 float(h) / float(self.height)) * 100.0
         )
 
-    def crop_by_channel(self, channel=3):
+    def crop_by_channel(self, channel: int = 3):
         data = self.get_data()
         if data.shape[2] < channel:
             return None
@@ -234,21 +247,21 @@ class GSNImage(object):
         c = data[:, :, channel]
 
         t = np.where(c > 0)
-        minx = t[0].min()
-        maxx = t[0].max()
+        minx: float = t[0].min()
+        maxx: float = t[0].max()
 
-        miny = t[1].min()
-        maxy = t[1].max()
+        miny: float = t[1].min()
+        maxy: float = t[1].max()
 
         return self.fromarray(data[minx:maxx, miny:maxy, :])
 
     @staticmethod
-    def create_image(width, height, channels=1, format=np.uint8):
+    def create_image(width: int, height: int, channels: int = 1, format=np.uint8):
         """
             Creates a new empty image/canvas
         """
         data = np.zeros(shape=(height, width), dtype=format)
-        #print data.shape
+        # print data.shape
         if channels > 1:
             data.resize((data.shape[0], data.shape[1], 1))
             data = np.repeat(data, channels, 2)
@@ -259,19 +272,22 @@ class GSNImage(object):
         return newimg
 
     def get_width(self):
-        return self.img.size[0]
+        if self.img:
+            return self.img.size[0]
 
     width = property(get_width, None, None, "Width of image")
 
     def get_height(self):
-        return self.img.size[1]
+        if self.img:
+            return self.img.size[1]
 
     height = property(get_height, None, None, "Height of image")
 
     """
     Info functions
     """
-    def get_info(self, name):
+
+    def get_info(self, name: str):
         """
             Gets info based on name.
             Splits up name string
@@ -280,7 +296,7 @@ class GSNImage(object):
         path = name.split('__')
         out = self.info
         for p in path:
-            if not p in out:
+            if p not in out:
                 return None
             out = out[p]
         return out
@@ -300,29 +316,29 @@ class GSNImage(object):
         self.analyze()
         self.save_info()
 
-    def save_info(self, filename=None):
+    def save_info(self, filename: Optional[Path] = None):
         print("Saving info")
-        if filename is None:
-            filename = self.filename + '.json'
+        if filename is None and self.filename is not None:
+            filename = self.filename.with_suffix('json')
 
-        #print json.dumps(self.info, indent=4)
+            # print json.dumps(self.info, indent=4)
+        if filename:
+            with open(filename, 'w') as f:
+                json.dump(self.info, f, indent=4)
+            # print self.info
 
-        with open(filename, 'w') as f:
-            json.dump(self.info, f, indent=4)
-        #print self.info
-
-    def feather(self, level):
+    def feather(self, level: int):
         self.feather_snow(level)
 
     @staticmethod
-    def snow_pixel(value, cur_level, step):
+    def snow_pixel(value: float, cur_level: float, step: float):
         if value < cur_level:
             cur_level -= step
         else:
             cur_level = 0
         return cur_level
 
-    def feather_snow(self, level):
+    def feather_snow(self, level: int):
         step = 256
 
         if level != 0:
@@ -368,7 +384,7 @@ class GSNImage(object):
     """
 
     def begin_draw(self):
-        if self.draw is None:
+        if self.draw is None and self.img is not None:
             self.draw = ImageDraw.Draw(self.img)
 
     def end_draw(self):
@@ -376,7 +392,10 @@ class GSNImage(object):
             del self.draw
             self.draw = None
 
-    def draw_polygon(self, xy, fill=None, outline=None):
+    def draw_polygon(self,
+                     xy: Tuple[int, int],
+                     fill: Union[str, int, Tuple[int, int, int], None] = None,
+                     outline: Union[str, int, Tuple[int, int, int], None] = None):
         if self.draw is None:
             raise Exception("Not in drawing mode")
 
