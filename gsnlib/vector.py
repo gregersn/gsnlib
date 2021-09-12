@@ -1,24 +1,31 @@
 import math
-import numpy as np
+from typing import List, Union
 
 from gsnlib.constants import EPSILON
 
 
 class Vector:
-    def __init__(self, x: float = 0.0, y: float = 0.0, z: float = 0.0):
+    v: List[float]
+
+    def __init__(self,
+                 x: Union[float, List[float]] = 0.0,
+                 y: float = 0.0,
+                 z: float = 0.0):
         if isinstance(x, list):
-            self.v = np.array(x, dtype=np.float64)
+            self.v = list(x) if len(x) == 3 else list(x) + [0.0, ]
         else:
-            self.v = np.array([x, y, z], dtype=np.float64)
+            self.v = [x, y, z]
 
     @classmethod
-    def from_array(cls, v):
+    def from_array(cls, v: List[float]):
         vec = cls()
-        vec.v = np.array(v)
+        vec.v = list(v) if len(v) == 3 else list(v) + [0.0, ]
         return vec
 
     def __sub__(self, other: "Vector"):
-        return self.from_array(self.v - other.v)
+        return self.from_array([self.x - other.x,
+                                self.y - other.y,
+                                self.z - other.z])
 
     def __lt__(self, other: "Vector"):
         return (self.x < other.x - EPSILON
@@ -35,10 +42,8 @@ class Vector:
         self.z += z
 
     def rotate(self, a: float):
-        transform = np.array([[np.cos(a), -np.sin(a)],
-                              [np.sin(a), np.cos(a)]])
-
-        self.v[0:2] = self.v[0:2].dot(transform)
+        self.x *= math.cos(a) + -math.sin(a)
+        self.y *= math.sin(a) + math.cos(a)
 
     @property
     def x(self) -> float:
@@ -116,4 +121,4 @@ class Vector:
                 * (self.y - other.y))
 
     def __eq__(self, o: 'Vector') -> bool:
-        return self.x == o.x and self.y == o.y
+        return self.x == o.x and self.y == o.y and self.z == o.z

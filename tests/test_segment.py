@@ -3,12 +3,13 @@ from gsnlib.geometry import Segment, Vector
 
 def test_repr():
     vertices = [
-        Vector(0, 0),
-        Vector(0, 10)
+        Vector(0.0, 0.0),
+        Vector(0.0, 10.0)
     ]
     segment = Segment(vertices=vertices)
 
-    assert repr(segment) == "<Segment (Vector(0.0, 0.0, 0.0), Vector(0.0, 10.0, 0.0))>", repr(segment)
+    assert repr(
+        segment) == "<Segment (Vector(0.0, 0.0, 0.0), Vector(0.0, 10.0, 0.0))>", repr(segment)
 
 
 def test_new_segment():
@@ -53,4 +54,3 @@ def test_segment_copy():
 
     assert s1 == s2
     assert s1 is not s2
-

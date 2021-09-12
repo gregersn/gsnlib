@@ -14,16 +14,14 @@ class TestVector(unittest.TestCase):
         self.assertTrue(np.array_equal(p.v, np.array([0, 1, 0])))
 
     def test_repr(self):
-        p = Vector(0, 0)
+        p = Vector(0.0, 0.0)
         self.assertEqual(repr(p), "Vector(0.0, 0.0, 0.0)")
 
-        p = Vector(-4, 3)
+        p = Vector(-4.0, 3.0)
         self.assertEqual(repr(p), "Vector(-4.0, 3.0, 0.0)")
 
-        p = Vector([-4, 3])
-        self.assertEqual(repr(p), "Vector(-4.0, 3.0)")
-
-
+        p = Vector([-4.0, 3.0])
+        self.assertEqual(repr(p), "Vector(-4.0, 3.0, 0.0)")
 
     def test_properties(self):
         a = random.random()

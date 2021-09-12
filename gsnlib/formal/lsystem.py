@@ -32,6 +32,6 @@ class lsystem:
 
             for s_pos in range(len(state)):
                 s = state[s_pos]
-                new_state.append(self.rules[s])
+                new_state.append(self.rules.get(s, s))
 
             self.state = "".join(new_state)

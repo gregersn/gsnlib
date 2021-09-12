@@ -4,7 +4,7 @@ from gsnlib.geometry import Segment
 
 
 def test_repr():
-    line = Line(Vector(0, 5), Vector(1, 0))
+    line = Line(Vector(0.0, 5.0), Vector(1.0, 0.0))
     assert repr(line) == "<Line(Vector(0.0, 5.0, 0.0), Vector(1.0, 0.0, 0.0)>"
 
 

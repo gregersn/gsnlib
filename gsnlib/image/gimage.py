@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from typing import Iterable, Literal, Optional
 from PIL import Image as PILImage
 from PIL import ImageDraw as PILImageDraw
 
@@ -11,9 +12,13 @@ import scipy.ndimage
 class Image:
     width: int
     height: int
-    pixels: np.array
+    pixels: Optional[Iterable[int]]
 
-    def __init__(self, width: int, height: int, data: np.array, mode: str = 'RGBA'):
+    def __init__(self,
+                 width: int,
+                 height: int,
+                 data: Optional[Iterable[int]],
+                 mode: str = 'RGBA'):
         self.width = width
         self.height = height
         self.pixels = data
@@ -109,9 +114,12 @@ class Image:
         # print(self.pixels.shape)
         self.pixels[:, :, 3] = alpha.pixels
 
-    def channel_copy(self, dch: int, sch: int):
+    def channel_copy(self, dch: int, sch: int, invert: bool = False):
         # Copies one channel into another
-        self.pixels[:, :, dch] = self.pixels[:, :, sch]
+        if invert:
+            self.pixels[:, :, dch] = 255 - self.pixels[:, :, sch]
+        else:
+            self.pixels[:, :, dch] = self.pixels[:, :, sch]
 
     def get_2d_data(self):
         if len(self.mode) > 1:
@@ -295,7 +303,7 @@ class Image:
             data[:, :, channel] = ch
             return self.fromarray(data)
 
-    def vignette(self, radius=0.3, inner_radius=0.3, channel=3):
+    def vignette(self, radius: float = 0.3, inner_radius: float = 0.3, channel: Literal[0, 1, 2, 3] = 3):
         center = (0.5, 0.5)
         aspect_correction = (1.0, 1.0)
 
@@ -327,7 +335,7 @@ class Image:
         self.pixels[:, :, channel] *= falloff
 
     def vignette2(self, amount: float = 0.1, sigma: int = 5):
-        edge = np.ceil(min(self.width, self.height) * 0.1).astype(int)
+        edge = np.ceil(min(self.width, self.height) * amount).astype(int)
 
         alpha = np.ones((self.height, self.width)).astype(float)
 
