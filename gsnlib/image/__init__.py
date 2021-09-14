@@ -339,10 +339,10 @@ class GSNImage(object):
         return cur_level
 
     def feather_snow(self, level: int):
-        step = 256
+        step = 256.0
 
         if level != 0:
-            step = 256 / level
+            step = 256.0 / level
 
         data = self.get_data()
         for y in range(self.height):

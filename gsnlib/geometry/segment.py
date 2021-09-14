@@ -24,7 +24,9 @@ class Segment:
         self.vertices.reverse()
         self.line.flip()
 
-    def __eq__(self, o: 'Segment') -> bool:
+    def __eq__(self, o: object) -> bool:
+        if not isinstance(o, Segment):
+            return NotImplemented
         if len(self.vertices) != len(o.vertices):
             return False
 

@@ -120,5 +120,7 @@ class Vector:
                 + (self.y - other.y)
                 * (self.y - other.y))
 
-    def __eq__(self, o: 'Vector') -> bool:
+    def __eq__(self, o: object) -> bool:
+        if not isinstance(o, Vector):
+            return NotImplemented
         return self.x == o.x and self.y == o.y and self.z == o.z

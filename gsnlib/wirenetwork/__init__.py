@@ -115,8 +115,8 @@ class WireNetwork:
 
         # Check if segment exists
         if p1_i is not None and p2_i is not None:
-            for s in self._edges:
-                if s == Edge(p1_i, p2_i):
+            for edge in self._edges:
+                if edge == Edge(p1_i, p2_i):
                     return
 
         # Check length of segment
@@ -124,8 +124,8 @@ class WireNetwork:
             return
 
         # Check if segment already in queue
-        for s in self._segment_queue:
-            if s == seg:
+        for queued_segment in self._segment_queue:
+            if queued_segment == seg:
                 return
 
         # Add segment to queue

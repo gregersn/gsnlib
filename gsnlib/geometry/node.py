@@ -1,5 +1,5 @@
 import logging
-from typing import List, Union
+from typing import List, Optional, Union
 from gsnlib.geometry.segment import Segment
 from gsnlib.geometry.line import Line
 
@@ -7,6 +7,9 @@ logger = logging.getLogger(__file__)
 
 
 class Node:
+    right: Optional['Node']
+    left: Optional['Node']
+
     def __init__(self, segments: List[Segment] = []):
         self.line: Union[Line, None] = None
         self.right = None
@@ -18,7 +21,9 @@ class Node:
     def __repr__(self) -> str:
         return f"<Node({self.segments})>"
 
-    def __eq__(self, o: 'Node') -> bool:
+    def __eq__(self, o: object) -> bool:
+        if not isinstance(o, Node):
+            return NotImplemented
         equal = True
 
         equal = o is not None

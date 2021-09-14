@@ -20,7 +20,9 @@ class Line:
         self.direction = direction
         self.normal = Vector(self.direction.y, -self.direction.x)
 
-    def __eq__(self, o: 'Line') -> bool:
+    def __eq__(self, o: object) -> bool:
+        if not isinstance(o, Line):
+            return NotImplemented
         return (self.origin == o.origin
                 and self.direction == o.direction
                 and self.normal == o.normal)

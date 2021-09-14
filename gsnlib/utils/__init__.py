@@ -59,9 +59,9 @@ def offsetter(aw: int,
 
     """
 
-    nw = max(aw, bw)
-    ao = 0
-    bo = offset
+    nw: float = max(aw, bw)
+    ao = 0.0
+    bo = float(offset)
 
     if mode == 'center':
         if aw >= bw:
