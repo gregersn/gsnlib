@@ -16,5 +16,8 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "Operation System :: OS Independent"
     ],
-    python_required=">=3.6"
+    python_required=">=3.6",
+    package_data={
+        'gsnlib': ['py.typed']
+    }
 )

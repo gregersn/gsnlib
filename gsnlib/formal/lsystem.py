@@ -1,11 +1,11 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 class lsystem:
     rules: Dict[str, str] = {}
     variables: List[str] = []
-    state = None
-    axiom = ''
+    state: Optional[str] = None
+    axiom: str = ''
 
     def __init__(self):
         pass
@@ -19,7 +19,7 @@ class lsystem:
     def add_constant(self, rule: str):
         self.rules[rule] = rule
 
-    def get_state(self):
+    def get_state(self) -> str:
         if self.state is None:
             return self.axiom
 

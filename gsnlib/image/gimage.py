@@ -146,7 +146,7 @@ class Image:
         return np.array(self.pixels)
 
     @classmethod
-    def fromarray(cls, data, mode=None, premult=False):
+    def fromarray(cls, data, mode=None, premult=False) -> 'Image':
         return cls.from_pil(PILImage.fromarray(data), mode=mode)
 
     @classmethod
@@ -181,7 +181,7 @@ class Image:
         return out
 
     @classmethod
-    def open(cls, filename: str, mode: str = 'RGBA', premult: bool = False):
+    def open(cls, filename: str, mode: str = 'RGBA', premult: bool = False) -> 'Image':
         try:
             img = PILImage.open(filename)
             return cls.from_pil(img, mode, premult)
@@ -209,7 +209,7 @@ class Image:
         self.width = x1 - x0
         self.height = y1 - y0
 
-    def copy(self, x0: int, y0: int, x1: int, y1: int):
+    def copy(self, x0: int, y0: int, x1: int, y1: int) -> 'Image':
         data = self.pixels[y0:y1, x0:x1]
         return self.fromarray(data)
 
